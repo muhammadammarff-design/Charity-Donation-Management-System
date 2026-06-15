@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amanah Charity — Live Dashboard Prototype</title>
+  <style>
+    :root {
+      --page: #f6f3ec;
+      --surface: #ffffff;
+      --surface-soft: #fbfaf6;
+      --blue-50: #eaf2ff;
+      --green-50: #e9f8f1;
+      --amber-50: #fff4d8;
+      --red-50: #fff1f0;
+      --text: #1d2939;
+      --text-2: #475467;
+      --muted: #667085;
+      --border: #e4e7ec;
+      --border-2: #d0d5dd;
+      --blue: #2457a6;
+      --blue-dark: #1e4380;
+      --green: #0f7a55;
+      --green-dark: #0b6446;
+      --amber: #b7791f;
+      --red: #b42318;
+      --shadow: 0 18px 42px rgba(29, 41, 57, .08);
+      --shadow-sm: 0 8px 20px rgba(29, 41, 57, .06);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --content: 1340px;
+      --ease: cubic-bezier(.2,.8,.2,1);
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(36, 87, 166, .10), transparent 32%),
+        radial-gradient(circle at 92% 8%, rgba(15, 122, 85, .09), transparent 30%),
+        var(--page);
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .shell { width: min(var(--content), calc(100% - 40px)); margin: 24px auto 48px; }
+
+    .top-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-logo {
+      width: 52px; height: 52px; border-radius: 18px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--blue), var(--green));
+      color: white; box-shadow: var(--shadow-sm);
+    }
+    .brand h1 { margin: 0; font-size: 20px; line-height: 1.1; letter-spacing: -.03em; }
+    .brand p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+    .prototype-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      min-height: 40px; padding: 0 14px; border-radius: 999px;
+      border: 1px solid var(--border); background: rgba(255,255,255,.72);
+      color: var(--text-2); font-size: 13px; font-weight: 800;
+    }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(15,122,85,.12); }
+
+    .login-wrap {
+      min-height: calc(100vh - 150px);
+      display: grid;
+      place-items: center;
+      animation: fade-up .9s var(--ease) both;
+    }
+
+    .login-card, .page-card, .metric-card, .panel-card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.90);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+    }
+
+    .login-card { width: min(540px, 100%); padding: 30px; }
+    .login-card h2 { margin: 0 0 7px; font-size: 31px; letter-spacing: -.045em; line-height: 1.08; }
+    .login-card .subtitle { margin: 0 0 24px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+
+    .role-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 7px; background: #f2f4f7; border-radius: 18px; margin-bottom: 24px; }
+    .role-tab { border: 0; min-height: 46px; border-radius: 14px; background: transparent; color: var(--muted); font-weight: 900; transition: .35s var(--ease); }
+    .role-tab.active { color: var(--blue-dark); background: var(--surface); box-shadow: var(--shadow-sm); }
+
+    .form-block h3 { margin: 0 0 7px; font-size: 23px; letter-spacing: -.04em; }
+    .form-block p { margin: 0 0 22px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .field { margin-bottom: 17px; }
+    .field label { display: flex; justify-content: space-between; color: var(--text); font-size: 13px; font-weight: 900; margin-bottom: 8px; gap: 12px; }
+    .field label span { color: var(--muted); font-weight: 750; }
+    .field input, .field select {
+      width: 100%; min-height: 50px; border-radius: 14px; border: 1px solid var(--border-2);
+      background: var(--surface); color: var(--text); padding: 0 14px; outline: none; transition: .35s var(--ease);
+    }
+    .field input:focus, .field select:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(36,87,166,.13); }
+    .error { display: block; min-height: 18px; margin-top: 7px; color: var(--red); font-size: 12px; }
+
+    .hint-box { border: 1px solid #d5e6ff; background: var(--blue-50); color: var(--text-2); border-radius: 16px; padding: 13px 15px; font-size: 13px; line-height: 1.5; margin: 14px 0 18px; }
+    .security-note { border: 1px solid var(--border); background: var(--surface-soft); color: var(--muted); border-radius: 16px; padding: 13px 15px; font-size: 13px; line-height: 1.5; margin-top: 18px; }
+
+    .button-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--border-2); border-radius: 14px; min-height: 48px; padding: 0 17px;
+      background: var(--surface); color: var(--text); font-weight: 900; transition: .35s var(--ease);
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .btn.green { background: var(--green); border-color: var(--green); color: #fff; }
+    .btn.danger { background: var(--red-50); border-color: #ffd4cf; color: var(--red); }
+    .btn.full { width: 100%; justify-content: center; }
+    .toast { margin-top: 14px; padding: 13px 15px; border-radius: 16px; font-size: 13px; line-height: 1.45; }
+    .toast.success { background: var(--green-50); color: var(--green-dark); border: 1px solid #c7eadb; }
+    .toast.error { background: var(--red-50); color: var(--red); border: 1px solid #ffd4cf; }
+
+    .generated-id { margin-top: 16px; padding: 18px; border-radius: 18px; background: var(--green-50); border: 1px solid #c7eadb; }
+    .generated-id strong { display: block; font-size: 13px; color: var(--green-dark); margin-bottom: 4px; }
+    .generated-id .id { font-size: 28px; font-weight: 950; letter-spacing: -.04em; color: var(--text); }
+
+    .app-layout { display: grid; grid-template-columns: 255px minmax(0, 1fr); gap: 34px; align-items: start; animation: fade-up .9s var(--ease) both; }
+    .side-nav { position: sticky; top: 20px; padding: 20px; border-radius: var(--radius-xl); background: rgba(255,255,255,.92); border: 1px solid rgba(255,255,255,.90); box-shadow: var(--shadow-sm); }
+    .role-card { padding: 16px; border-radius: 18px; background: var(--blue-50); border: 1px solid #d5e6ff; margin-bottom: 18px; }
+    .role-card strong { display: block; margin-bottom: 5px; font-size: 14px; }
+    .role-card span { color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .nav-title { color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-size: 11px; font-weight: 950; margin: 14px 8px 9px; }
+    .nav-button { width: 100%; min-height: 48px; border: 0; border-radius: 14px; padding: 0 13px; margin-bottom: 7px; display: flex; align-items: center; gap: 10px; background: transparent; color: var(--text-2); font-weight: 850; transition: .35s var(--ease); }
+    .nav-button:hover { color: var(--text); background: #f2f4f7; }
+    .nav-button.active { color: var(--blue-dark); background: var(--blue-50); }
+    .nav-button svg { width: 19px; height: 19px; flex: 0 0 auto; }
+    .logout { width: 100%; margin-top: 16px; }
+
+    .page-stack { display: grid; gap: 40px; }
+    .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 28px; padding: 32px; }
+    .eyebrow { display: inline-flex; align-items: center; width: fit-content; min-height: 30px; padding: 0 12px; border-radius: 999px; background: var(--blue-50); color: var(--blue-dark); font-size: 12px; font-weight: 950; text-transform: uppercase; letter-spacing: .04em; }
+    .page-head h2 { margin: 9px 0 9px; font-size: clamp(29px, 3.2vw, 44px); line-height: 1.04; letter-spacing: -.055em; }
+    .page-head p { margin: 0; color: var(--muted); max-width: 730px; line-height: 1.6; }
+    .head-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 34px; }
+    .metric-card { padding: 34px; transition: .35s var(--ease); min-height: 168px; }
+    .metric-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .metric-label { color: var(--muted); font-size: 13px; font-weight: 900; margin-bottom: 12px; }
+    .metric-value { font-size: clamp(30px, 4vw, 44px); line-height: 1; font-weight: 950; letter-spacing: -.055em; }
+    .metric-help { margin-top: 14px; color: var(--text-2); font-size: 14px; line-height: 1.45; }
+
+    .columns-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px; }
+    .panel-card { padding: 34px; min-width: 0; }
+    .panel-title { display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; margin-bottom: 22px; }
+    .panel-title h3 { margin: 0 0 7px; font-size: 21px; letter-spacing: -.03em; }
+    .panel-title p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .chip { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 999px; background: var(--green-50); color: var(--green-dark); font-size: 12px; font-weight: 950; white-space: nowrap; }
+    .chip.blue { background: var(--blue-50); color: var(--blue-dark); }
+    .chip.amber { background: var(--amber-50); color: #875a00; }
+
+    .campaign-list { display: grid; gap: 22px; }
+    .campaign-row { padding: 24px; border-radius: 22px; border: 1px solid var(--border); background: var(--surface); display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 22px; align-items: center; transition: .35s var(--ease); }
+    .campaign-row:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .campaign-row h4 { margin: 0 0 7px; font-size: 17px; letter-spacing: -.025em; }
+    .campaign-row p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .progress-line { height: 12px; border-radius: 999px; background: #eef2f6; overflow: hidden; margin-top: 16px; }
+    .progress-line span { display: block; height: 100%; width: var(--w); background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 999px; transform-origin: left; animation: scale-x 1.4s var(--ease) both; }
+    .campaign-money { text-align: right; }
+    .campaign-money strong { display: block; font-size: 22px; letter-spacing: -.04em; }
+    .campaign-money span { color: var(--muted); font-size: 12px; font-weight: 850; }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 22px; background: var(--surface); }
+    table { width: 100%; min-width: 660px; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 16px 18px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+    th { background: #f9fafb; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-size: 12px; font-weight: 950; }
+    tr:last-child td { border-bottom: 0; }
+    .status { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 950; background: var(--green-50); color: var(--green-dark); }
+    .status.warn { background: var(--amber-50); color: #875a00; }
+
+    .activity-list { display: grid; gap: 20px; }
+    .activity-card { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 20px; border: 1px solid var(--border); border-radius: 22px; background: var(--surface); transition: .35s var(--ease); }
+    .activity-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .activity-icon { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; font-weight: 950; color: var(--blue-dark); background: var(--blue-50); }
+    .activity-icon.green { color: var(--green-dark); background: var(--green-50); }
+    .activity-card strong { display: block; font-size: 15px; margin-bottom: 4px; }
+    .activity-card span { color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .activity-amount { font-size: 16px; font-weight: 950; white-space: nowrap; text-align: right; }
+
+    .statement-grid { display: grid; grid-template-columns: 1fr; gap: 34px; }
+    .statement-card { padding: 34px; border-radius: var(--radius-xl); background: linear-gradient(135deg, var(--blue), #3167bd); color: white; box-shadow: var(--shadow); }
+    .statement-card h3 { margin: 0 0 8px; font-size: 30px; letter-spacing: -.04em; }
+    .statement-card p { color: rgba(255,255,255,.82); line-height: 1.55; margin: 0; }
+    .statement-metrics { margin-top: 30px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+    .statement-metric { border-radius: 20px; padding: 18px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); }
+    .statement-metric span { display: block; color: rgba(255,255,255,.76); font-size: 12px; font-weight: 850; margin-bottom: 8px; }
+    .statement-metric strong { font-size: 20px; letter-spacing: -.03em; }
+
+    .priority-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    .priority-card { border: 1px solid var(--border); background: var(--surface); border-radius: 22px; padding: 22px; }
+    .priority-card strong { display: block; margin-bottom: 7px; }
+    .priority-card p { margin: 0; color: var(--muted); line-height: 1.45; font-size: 14px; }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background: rgba(29, 41, 57, .34); backdrop-filter: blur(8px); }
+    .modal { width: min(640px, 100%); max-height: min(780px, calc(100vh - 48px)); overflow: auto; background: var(--surface); border: 1px solid rgba(255,255,255,.9); border-radius: var(--radius-xl); box-shadow: 0 28px 90px rgba(29,41,57,.24); padding: 30px; animation: fade-up .55s var(--ease) both; }
+    .modal-head { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; margin-bottom: 22px; }
+    .modal-head h3 { margin: 0 0 7px; font-size: 25px; letter-spacing: -.04em; }
+    .modal-head p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .modal-close { border: 1px solid var(--border); background: var(--surface-soft); border-radius: 12px; width: 42px; height: 42px; font-weight: 950; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .field.full-span { grid-column: 1 / -1; }
+
+    @keyframes fade-up { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scale-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+    @media print {
+      .top-strip, .side-nav, .head-actions, .modal-backdrop { display: none !important; }
+      body { background: white; }
+      .shell { width: 100%; margin: 0; }
+      .app-layout { display: block; }
+      .page-card, .metric-card, .panel-card { box-shadow: none; border: 1px solid #ddd; }
+    }
+
+    @media (max-width: 1080px) {
+      .app-layout, .statement-grid { grid-template-columns: 1fr; }
+      .side-nav { position: relative; top: 0; }
+      .metrics, .columns-2, .priority-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .shell { width: min(100% - 24px, var(--content)); margin-top: 14px; }
+      .top-strip, .page-head, .campaign-row, .activity-card { display: flex; flex-direction: column; align-items: stretch; }
+      .prototype-pill { display: none; }
+      .role-tabs { grid-template-columns: 1fr; }
+      .campaign-money, .activity-amount { text-align: left; }
+      .statement-metrics, .form-grid { grid-template-columns: 1fr; }
+      .button-row, .head-actions { display: grid; grid-template-columns: 1fr; }
+      .btn { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+
+    /* Spacing correction v7: more breathing room above, below, and inside cards on all tabs */
+    .page-card,
+    .metric-card,
+    .panel-card {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .metrics,
+    .columns-2,
+    .statement-grid,
+    .priority-grid {
+      row-gap: 44px;
+      column-gap: 34px;
+      margin-top: 10px;
+      margin-bottom: 14px;
+    }
+
+    .metric-card {
+      padding-top: 46px;
+      padding-bottom: 46px;
+      min-height: 210px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .metric-label {
+      margin-bottom: 18px;
+    }
+
+    .metric-value {
+      margin-bottom: 18px;
+    }
+
+    .metric-help {
+      margin-top: 0;
+    }
+
+    .panel-card {
+      padding-top: 42px;
+      padding-bottom: 42px;
+    }
+
+    .page-head {
+      padding-top: 40px;
+      padding-bottom: 40px;
+      margin-bottom: 8px;
+    }
+
+    .campaign-list,
+    .activity-list {
+      gap: 28px;
+    }
+
+    .campaign-row,
+    .activity-card,
+    .priority-card,
+    .statement-metric {
+      padding-top: 26px;
+      padding-bottom: 26px;
+    }
+
+    .panel-title {
+      margin-bottom: 30px;
+    }
+
+    .table-wrap {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .login-card {
+      padding-top: 38px;
+      padding-bottom: 38px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="top-strip">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="27" height="27" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.3-9.2-9.2C1.1 8 3.6 4.4 7.2 4.4c2 0 3.5 1 4.8 2.6 1.3-1.6 2.8-2.6 4.8-2.6 3.6 0 6.1 3.6 4.4 7.4C19 16.7 12 21 12 21Z" fill="white"/></svg>
+        </div>
+        <div><h1>Amanah Charity System</h1><p>Interactive dashboard prototype</p></div>
+      </div>
+      <div class="prototype-pill"><span class="dot"></span> Live HTML prototype</div>
+    </header>
+
+    <section id="login-screen" class="login-wrap">
+      <div class="login-card">
+        <h2>Login</h2>
+        <p class="subtitle">Choose donor, register donor, or admin access.</p>
+        <div class="role-tabs" role="tablist" aria-label="Choose role">
+          <button class="role-tab active" type="button" id="donor-tab">Donor</button>
+          <button class="role-tab" type="button" id="register-tab">Register</button>
+          <button class="role-tab" type="button" id="admin-tab">Admin</button>
+        </div>
+
+        <div class="form-block" id="donor-login">
+          <h3>Donor verification</h3>
+          <p>View your donation statement using Donor ID and email.</p>
+          <div class="field"><label for="donor-id">Donor ID <span>Format: DNR001</span></label><input id="donor-id" value="DNR001" autocomplete="off"><span class="error" id="donor-id-error"></span></div>
+          <div class="field"><label for="donor-email">Email <span>Required</span></label><input id="donor-email" value="ahmed.khan@example.com" autocomplete="email"><span class="error" id="donor-email-error"></span></div>
+          <div class="hint-box">Demo donor: <strong>DNR001</strong> + <strong>ahmed.khan@example.com</strong></div>
+          <div class="button-row"><button class="btn primary" type="button" id="donor-login-button">Login as donor</button><button class="btn" type="button" id="fill-donor-button">Fill demo</button></div>
+          <div class="toast error" id="donor-login-error" hidden></div>
+        </div>
+
+        <div class="form-block" id="donor-register" hidden>
+          <h3>Register as donor</h3>
+          <p>Your Donor ID will be generated by the system after registration.</p>
+          <div class="field"><label for="reg-name">Full name <span>Required</span></label><input id="reg-name" value="New Donor"><span class="error" id="reg-name-error"></span></div>
+          <div class="field"><label for="reg-email">Email <span>Required</span></label><input id="reg-email" value="new.donor@example.com"><span class="error" id="reg-email-error"></span></div>
+          <div class="field"><label for="reg-contact">Contact <span>7-15 digits</span></label><input id="reg-contact" value="+92 300 1234567"><span class="error" id="reg-contact-error"></span></div>
+          <div class="button-row"><button class="btn green" type="button" id="register-button">Register donor</button></div>
+          <div class="generated-id" id="generated-id-box" hidden><strong>Generated Donor ID</strong><div class="id" id="generated-id-text">DNR004</div><p style="margin:8px 0 0;color:var(--text-2);font-size:13px;line-height:1.45;">Save this ID. It will be used for donor login.</p><button class="btn primary full" type="button" id="continue-new-donor" style="margin-top:12px;">Continue to donor portal</button></div>
+          <div class="toast error" id="register-error" hidden></div>
+        </div>
+
+        <div class="form-block" id="admin-login" hidden>
+          <h3>Admin login</h3>
+          <p>Open management dashboard, campaigns, reports, and validation pages.</p>
+          <div class="field"><label for="admin-user">Username <span>Required</span></label><input id="admin-user" value="admin" autocomplete="username"><span class="error" id="admin-user-error"></span></div>
+          <div class="field"><label for="admin-password">Password <span>Masked</span></label><input id="admin-password" type="password" value="admin123" autocomplete="current-password"><span class="error" id="admin-password-error"></span></div>
+          <div class="hint-box">Demo admin: <strong>admin</strong> + <strong>admin123</strong></div>
+          <div class="button-row"><button class="btn primary" type="button" id="admin-login-button">Login as admin</button><button class="btn" type="button" id="fill-admin-button">Fill demo</button></div>
+          <div class="toast error" id="admin-login-error" hidden></div>
+        </div>
+        <div class="security-note">Prototype note: interactions are simulated here. The final Streamlit version will connect these actions to the C++ core.</div>
+      </div>
+    </section>
+
+    <section id="app-screen" class="app-layout" hidden>
+      <aside class="side-nav" aria-label="App navigation">
+        <div class="role-card"><strong id="role-title">Admin Area</strong><span id="role-desc">Management pages unlocked.</span></div>
+        <div class="nav-title">Navigation</div>
+        <div id="admin-nav">
+          <button class="nav-button active" type="button" data-page="admin-dashboard"><svg viewBox="0 0 24 24"><path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z" fill="currentColor"/></svg>Dashboard</button>
+          <button class="nav-button" type="button" data-page="campaigns-page"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5V4Zm3 4v3h8V8H8Zm0 6v2h10v-2H8Z" fill="currentColor"/></svg>Campaigns</button>
+          <button class="nav-button" type="button" data-page="reports-page"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6V3Zm8 1.5V8h3.5L14 4.5ZM8 12h8v2H8v-2Zm0 4h6v2H8v-2Z" fill="currentColor"/></svg>Reports</button>
+        </div>
+        <div id="donor-nav" hidden>
+          <button class="nav-button active" type="button" data-page="donor-statement-page"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9a8 8 0 0 1 16 0H4Z" fill="currentColor"/></svg>My Statement</button>
+          <button class="nav-button" type="button" data-page="donor-impact-page"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.3-9.2-9.2C1.1 8 3.6 4.4 7.2 4.4c2 0 3.5 1 4.8 2.6 1.3-1.6 2.8-2.6 4.8-2.6 3.6 0 6.1 3.6 4.4 7.4C19 16.7 12 21 12 21Z" fill="currentColor"/></svg>Campaign Impact</button>
+        </div>
+        <button class="btn danger logout" type="button" id="logout-button">Logout</button>
+      </aside>
+
+      <main class="page-stack">
+        <section class="app-page" id="admin-dashboard">
+          <div class="page-card page-head"><div><span class="eyebrow">Admin overview</span><h2>Clear financial snapshot.</h2><p>Only the most important metrics are shown first. Campaigns and reports have their own pages.</p></div><div class="head-actions"><button class="btn primary" type="button" id="open-donation-modal">Record donation</button><button class="btn" type="button" id="open-allocation-modal">Allocate funds</button></div></div>
+          <div class="metrics"><article class="metric-card"><div class="metric-label">Total received</div><div class="metric-value" id="metric-received">Rs. 345k</div><div class="metric-help">Donation records across campaigns.</div></article><article class="metric-card"><div class="metric-label">Funds allocated</div><div class="metric-value" id="metric-allocated">Rs. 125k</div><div class="metric-help">Beneficiary allocation records.</div></article><article class="metric-card"><div class="metric-label">Available balance</div><div class="metric-value" id="metric-balance">Rs. 220k</div><div class="metric-help">Remaining amount for upcoming distributions.</div></article></div>
+          <section class="panel-card"><div class="panel-title"><div><h3>Priority actions</h3><p>Only important alerts are shown here so the dashboard stays useful.</p></div><span class="chip amber">Needs attention</span></div><div class="priority-grid"><div class="priority-card"><strong>Medical Aid Drive is under-funded</strong><p>Only 14% funded. This campaign should be highlighted to donors before other active drives.</p></div><div class="priority-card"><strong>Monthly report is ready</strong><p>Generate June report before submission screenshots so totals match the report evidence.</p></div></div></section>
+          <section class="panel-card"><div class="panel-title"><div><h3>Campaign progress</h3><p>Readable progress list instead of many competing charts.</p></div><span class="chip blue" id="active-campaign-count">3 active</span></div><div class="campaign-list" id="dashboard-campaign-list"></div></section>
+          <section class="panel-card"><div class="panel-title"><div><h3>Recent activity</h3><p>New donations and allocations appear here after using the action buttons above.</p></div><span class="chip">Live prototype</span></div><div class="activity-list" id="activity-list"></div></section>
+        </section>
+
+        <section class="app-page" id="campaigns-page" hidden>
+          <div class="page-card page-head"><div><span class="eyebrow">Campaign management</span><h2>Campaigns with status and progress.</h2><p>Create campaigns and filter only active campaigns when preparing the demo.</p></div><div class="head-actions"><button class="btn primary" type="button" id="open-campaign-modal">Create campaign</button><button class="btn" type="button" id="filter-active-button">Filter active</button></div></div>
+          <section class="panel-card"><div class="panel-title"><div><h3>All campaigns</h3><p>Target, collected, allocated, available amount, and status.</p></div><span class="chip blue" id="campaign-filter-chip">Showing all</span></div><div class="campaign-list" id="campaigns-list"></div></section>
+        </section>
+
+        <section class="app-page" id="reports-page" hidden>
+          <div class="page-card page-head"><div><span class="eyebrow">Reports</span><h2>Transparency reports for submission and viva.</h2><p>Generate reports and open the export dialog for browser print/save as PDF.</p></div><div class="head-actions"><button class="btn primary" type="button" id="generate-report-button">Generate monthly report</button><button class="btn" type="button" id="export-pdf-button">Export PDF</button></div></div>
+          <div class="metrics"><article class="metric-card"><div class="metric-label">Current donations</div><div class="metric-value" id="report-donations">Rs. 345k</div><div class="metric-help">Report period: 2026-06.</div></article><article class="metric-card"><div class="metric-label">Current allocations</div><div class="metric-value" id="report-allocations">Rs. 125k</div><div class="metric-help">Aid distributed to beneficiaries.</div></article><article class="metric-card"><div class="metric-label">Current balance</div><div class="metric-value" id="report-balance">Rs. 220k</div><div class="metric-help">Remaining balance after allocation.</div></article></div>
+          <section class="panel-card"><div class="panel-title"><div><h3>Generated reports</h3><p>Clear table for screenshots and report evidence.</p></div><span class="chip" id="report-status-chip">Ready</span></div><div class="table-wrap"><table><thead><tr><th>Report ID</th><th>Type</th><th>Period</th><th>Donations</th><th>Allocations</th><th>Balance</th><th>Status</th></tr></thead><tbody id="reports-body"></tbody></table></div></section>
+        </section>
+
+        <section class="app-page" id="donor-statement-page" hidden>
+          <div class="page-card page-head"><div><span class="eyebrow">Donor portal</span><h2 id="donor-page-title">My donation statement.</h2><p>Read-only view. Donors see their own records, not admin CRUD tools.</p></div></div>
+          <div class="statement-grid"><div class="statement-card"><h3 id="statement-name">Ahmed Khan</h3><p id="statement-email">Verified donor · Email protected: <strong>a***d.khan@example.com</strong></p><div class="statement-metrics"><div class="statement-metric"><span>Total donated</span><strong id="statement-total">Rs. 75k</strong></div><div class="statement-metric"><span>Donations</span><strong id="statement-count">1</strong></div><div class="statement-metric"><span>Campaigns</span><strong id="statement-campaigns">1</strong></div></div></div><div class="panel-card"><div class="panel-title"><div><h3>Donation history</h3><p id="donation-history-note">Only this donor's records are shown.</p></div></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Campaign</th><th>Method</th><th>Amount</th></tr></thead><tbody id="donation-history-body"><tr><td>2026-06-12</td><td>Flood Relief 2026</td><td>Bank Transfer</td><td>Rs. 75,000</td></tr></tbody></table></div></div></div>
+        </section>
+
+        <section class="app-page" id="donor-impact-page" hidden>
+          <div class="page-card page-head"><div><span class="eyebrow">Campaign impact</span><h2>Where supported campaign funds went.</h2><p>Donors see campaign-level allocation transparency without private contact information.</p></div></div>
+          <section class="panel-card"><div class="panel-title"><div><h3>Supported campaign</h3><p id="impact-note">Flood Relief 2026 received this donor's donation.</p></div><span class="chip blue" id="impact-chip">40% funded</span></div><div id="impact-content" class="campaign-row"><div><h4>Flood Relief 2026</h4><p>Collected Rs. 200k · Allocated Rs. 60k · Available Rs. 140k</p><div class="progress-line"><span style="--w:40%"></span></div></div><div class="campaign-money"><strong>Rs. 140k</strong><span>still available</span></div></div></section>
+          <section class="panel-card"><div class="panel-title"><div><h3>Allocation evidence</h3><p>Beneficiary contact information is hidden from donor view.</p></div></div><div class="table-wrap"><table><thead><tr><th>Beneficiary</th><th>Purpose</th><th>Date</th><th>Amount</th></tr></thead><tbody id="allocation-body"><tr><td>Bilal Family</td><td>Ration bags and temporary shelter</td><td>2026-06-18</td><td>Rs. 60,000</td></tr></tbody></table></div></section>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="action-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-head"><div><h3 id="modal-title">Record donation</h3><p id="modal-subtitle">Prototype action with validation.</p></div><button class="modal-close" type="button" id="close-modal" aria-label="Close modal">×</button></div>
+
+      <div id="donation-form"><div class="form-grid"><div class="field"><label for="donation-donor">Donor ID <span>Required</span></label><input id="donation-donor" value="DNR001"><span class="error" id="donation-donor-error"></span></div><div class="field"><label for="donation-campaign">Campaign <span>Required</span></label><select id="donation-campaign"></select><span class="error" id="donation-campaign-error"></span></div><div class="field"><label for="donation-amount">Amount <span>Positive</span></label><input id="donation-amount" value="5000"><span class="error" id="donation-amount-error"></span></div><div class="field"><label for="donation-method">Method <span>Required</span></label><input id="donation-method" value="Cash"><span class="error" id="donation-method-error"></span></div><div class="field full-span"><label for="donation-note">Note <span>Optional</span></label><input id="donation-note" value="General donation"></div></div><div class="button-row"><button class="btn primary" type="button" id="submit-donation">Save donation</button><button class="btn" type="button" id="cancel-donation">Cancel</button></div></div>
+
+      <div id="allocation-form" hidden><div class="form-grid"><div class="field"><label for="allocation-beneficiary">Beneficiary <span>Required</span></label><input id="allocation-beneficiary" value="Bilal Family"><span class="error" id="allocation-beneficiary-error"></span></div><div class="field"><label for="allocation-campaign">Campaign <span>Required</span></label><select id="allocation-campaign"></select><span class="error" id="allocation-campaign-error"></span></div><div class="field"><label for="allocation-amount">Amount <span>Cannot exceed balance</span></label><input id="allocation-amount" value="10000"><span class="error" id="allocation-amount-error"></span></div><div class="field"><label for="allocation-purpose">Purpose <span>Required</span></label><input id="allocation-purpose" value="Food package"><span class="error" id="allocation-purpose-error"></span></div></div><div class="button-row"><button class="btn primary" type="button" id="submit-allocation">Save allocation</button><button class="btn" type="button" id="cancel-allocation">Cancel</button></div></div>
+
+      <div id="campaign-form" hidden><div class="form-grid"><div class="field full-span"><label for="campaign-title">Campaign title <span>Required</span></label><input id="campaign-title" value="Winter Clothing Drive"><span class="error" id="campaign-title-error"></span></div><div class="field"><label for="campaign-target">Target amount <span>Positive</span></label><input id="campaign-target" value="150000"><span class="error" id="campaign-target-error"></span></div><div class="field"><label for="campaign-status">Status <span>Required</span></label><select id="campaign-status"><option>Active</option><option>Paused</option></select><span class="error" id="campaign-status-error"></span></div><div class="field full-span"><label for="campaign-description">Description <span>Required</span></label><input id="campaign-description" value="Warm clothing support for low-income families"><span class="error" id="campaign-description-error"></span></div></div><div class="button-row"><button class="btn primary" type="button" id="submit-campaign">Create campaign</button><button class="btn" type="button" id="cancel-campaign">Cancel</button></div></div>
+
+      <div id="export-form" hidden><div class="hint-box"><strong>PDF export prototype:</strong> In the real app this becomes report PDF export. In this HTML prototype, use the browser print dialog and choose “Save as PDF”.</div><div class="table-wrap"><table><thead><tr><th>Report</th><th>Donations</th><th>Allocations</th><th>Balance</th></tr></thead><tbody><tr><td>June Transparency Report</td><td id="export-donations">Rs. 345k</td><td id="export-allocations">Rs. 125k</td><td id="export-balance">Rs. 220k</td></tr></tbody></table></div><div class="button-row" style="margin-top:18px;"><button class="btn primary" type="button" id="print-report">Print / Save as PDF</button><button class="btn" type="button" id="cancel-export">Cancel</button></div></div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const donors = { DNR001: { id: 'DNR001', name: 'Ahmed Khan', email: 'ahmed.khan@example.com', total: 75000, count: 1, campaigns: 1, hasDonations: true } };
+    let lastGeneratedId = 'DNR004';
+    let totalReceived = 345000;
+    let totalAllocated = 125000;
+    let showActiveOnly = false;
+    let reportCounter = 2;
+
+    const campaigns = [
+      { title: 'Flood Relief 2026', description: 'Food, shelter, and medicine support.', target: 500000, collected: 200000, allocated: 60000, status: 'Active' },
+      { title: 'Education Support', description: 'School fees, books, bags, and uniforms.', target: 300000, collected: 90000, allocated: 35000, status: 'Active' },
+      { title: 'Medical Aid Drive', description: 'Treatment and medicines for low-income patients.', target: 400000, collected: 55000, allocated: 30000, status: 'Active' },
+      { title: 'Winter Clothing Drive', description: 'Warm clothing support for low-income families.', target: 150000, collected: 0, allocated: 0, status: 'Paused' }
+    ];
+
+    const reports = [
+      { id: 'RPT001', type: 'Monthly', period: '2026-06', donations: 345000, allocations: 125000, balance: 220000, status: 'Ready' },
+      { id: 'RPT002', type: 'Campaign', period: 'Flood Relief', donations: 200000, allocations: 60000, balance: 140000, status: 'Ready' }
+    ];
+
+    const activities = [
+      { kind: 'DN', title: 'Ahmed Khan donated to Flood Relief', detail: 'Bank Transfer · 2026-06-12', amount: 75000 },
+      { kind: 'DN', title: 'Fatima Foundation donated to Education Support', detail: 'Bank Transfer · 2026-06-15', amount: 90000 },
+      { kind: 'AL', title: 'Funds allocated to Bilal Family', detail: 'Flood Relief · Ration bags and shelter', amount: 60000 }
+    ];
+
+    function escapeHTML(value) { return String(value).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch])); }
+    function formatMoney(value) { return 'Rs. ' + Math.round(Number(value) / 1000) + 'k'; }
+    function formatFull(value) { return 'Rs. ' + Number(value).toLocaleString(); }
+    function available(c) { return c.collected - c.allocated; }
+    function percent(c) { return c.target > 0 ? Math.round((c.collected / c.target) * 100) : 0; }
+    function maskEmail(email) { const parts = email.split('@'); if (parts.length !== 2) return 'hidden'; const name = parts[0]; return (name[0] + '***' + (name.length > 2 ? name.slice(-1) : '')) + '@' + parts[1]; }
+    function moneyNumber(value) { return Number(String(value).replace(/[^0-9.]/g, '')); }
+    function validEmail(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value); }
+    function validContact(value) { const digits = value.replace(/\D/g, ''); return digits.length >= 7 && digits.length <= 15; }
+
+    function renderAll() { renderMetrics(); renderCampaignSelects(); renderDashboardCampaigns(); renderCampaignsPage(); renderActivities(); renderReports(); }
+    function renderMetrics() { const balance = totalReceived - totalAllocated; $('metric-received').textContent = formatMoney(totalReceived); $('metric-allocated').textContent = formatMoney(totalAllocated); $('metric-balance').textContent = formatMoney(balance); $('report-donations').textContent = formatMoney(totalReceived); $('report-allocations').textContent = formatMoney(totalAllocated); $('report-balance').textContent = formatMoney(balance); $('export-donations').textContent = formatMoney(totalReceived); $('export-allocations').textContent = formatMoney(totalAllocated); $('export-balance').textContent = formatMoney(balance); }
+    function renderCampaignRow(c) { const p = percent(c); const statusClass = c.status === 'Active' ? 'status' : 'status warn'; return `<div class="campaign-row"><div><h4>${escapeHTML(c.title)} <span class="${statusClass}">${escapeHTML(c.status)}</span></h4><p>${escapeHTML(c.description)} · Target ${formatFull(c.target)} · Collected ${formatFull(c.collected)} · Allocated ${formatFull(c.allocated)}</p><div class="progress-line"><span style="--w:${Math.min(p,100)}%"></span></div></div><div class="campaign-money"><strong>${formatMoney(available(c))}</strong><span>${p}% funded · available</span></div></div>`; }
+    function renderDashboardCampaigns() { const active = campaigns.filter(c => c.status === 'Active'); $('active-campaign-count').textContent = active.length + ' active'; $('dashboard-campaign-list').innerHTML = active.slice(0,3).map(renderCampaignRow).join(''); }
+    function renderCampaignsPage() { const list = showActiveOnly ? campaigns.filter(c => c.status === 'Active') : campaigns; $('campaigns-list').innerHTML = list.map(renderCampaignRow).join(''); $('filter-active-button').textContent = showActiveOnly ? 'Show all' : 'Filter active'; $('campaign-filter-chip').textContent = showActiveOnly ? 'Active only' : 'Showing all'; }
+    function renderActivities() { $('activity-list').innerHTML = activities.map(a => `<div class="activity-card"><div class="${a.kind === 'DN' ? 'activity-icon green' : 'activity-icon'}">${a.kind}</div><div><strong>${escapeHTML(a.title)}</strong><span>${escapeHTML(a.detail)}</span></div><div class="activity-amount">${formatFull(a.amount)}</div></div>`).join(''); }
+    function renderReports() { $('reports-body').innerHTML = reports.map(r => `<tr><td>${r.id}</td><td>${r.type}</td><td>${escapeHTML(r.period)}</td><td>${formatMoney(r.donations)}</td><td>${formatMoney(r.allocations)}</td><td>${formatMoney(r.balance)}</td><td><span class="status">${r.status}</span></td></tr>`).join(''); $('report-status-chip').textContent = reports.length + ' reports'; }
+    function renderCampaignSelects() { const options = campaigns.filter(c => c.status === 'Active').map(c => `<option>${escapeHTML(c.title)}</option>`).join(''); $('donation-campaign').innerHTML = options; $('allocation-campaign').innerHTML = options; }
+
+    function clearErrors() { document.querySelectorAll('.error').forEach(el => el.textContent = ''); ['donor-login-error','admin-login-error','register-error'].forEach(id => { if ($(id)) { $(id).hidden = true; $(id).textContent = ''; } }); }
+    function clearActionErrors() { ['donation-donor-error','donation-campaign-error','donation-amount-error','donation-method-error','allocation-beneficiary-error','allocation-campaign-error','allocation-amount-error','allocation-purpose-error','campaign-title-error','campaign-target-error','campaign-status-error','campaign-description-error'].forEach(id => { const el = $(id); if (el) el.textContent = ''; }); }
+
+    function setLoginTab(tab) { clearErrors(); $('donor-tab').classList.toggle('active', tab === 'donor'); $('register-tab').classList.toggle('active', tab === 'register'); $('admin-tab').classList.toggle('active', tab === 'admin'); $('donor-login').hidden = tab !== 'donor'; $('donor-register').hidden = tab !== 'register'; $('admin-login').hidden = tab !== 'admin'; }
+    function fillDonorDemo() { $('donor-id').value = 'DNR001'; $('donor-email').value = 'ahmed.khan@example.com'; clearErrors(); }
+    function fillAdminDemo() { $('admin-user').value = 'admin'; $('admin-password').value = 'admin123'; clearErrors(); }
+
+    function donorLogin() { clearErrors(); const id = $('donor-id').value.trim().toUpperCase(); const email = $('donor-email').value.trim().toLowerCase(); let ok = true; if (!/^DNR\d{3}$/.test(id)) { $('donor-id-error').textContent = 'Use donor ID format like DNR001.'; ok = false; } if (!validEmail(email)) { $('donor-email-error').textContent = 'Enter a valid email address.'; ok = false; } if (!ok) { $('donor-login-error').textContent = 'Please correct the highlighted fields.'; $('donor-login-error').hidden = false; return; } if (!donors[id] || donors[id].email.toLowerCase() !== email) { $('donor-login-error').textContent = 'No donor found with this ID and email in the prototype data.'; $('donor-login-error').hidden = false; return; } loadDonor(donors[id]); openApp('donor'); }
+    function adminLogin() { clearErrors(); const user = $('admin-user').value.trim(); const pass = $('admin-password').value; let ok = true; if (user.length < 3) { $('admin-user-error').textContent = 'Username must be at least 3 characters.'; ok = false; } if (pass.length < 6) { $('admin-password-error').textContent = 'Password must be at least 6 characters.'; ok = false; } if (!ok) { $('admin-login-error').textContent = 'Please correct the highlighted fields.'; $('admin-login-error').hidden = false; return; } if (user !== 'admin' || pass !== 'admin123') { $('admin-login-error').textContent = 'Wrong demo credentials. Use admin / admin123.'; $('admin-login-error').hidden = false; return; } openApp('admin'); }
+    function registerDonor() { clearErrors(); const name = $('reg-name').value.trim(); const email = $('reg-email').value.trim().toLowerCase(); const contact = $('reg-contact').value.trim(); let ok = true; if (name.length < 2) { $('reg-name-error').textContent = 'Name must be at least 2 characters.'; ok = false; } if (!validEmail(email)) { $('reg-email-error').textContent = 'Enter a valid email address.'; ok = false; } if (!validContact(contact)) { $('reg-contact-error').textContent = 'Contact must contain 7 to 15 digits.'; ok = false; } if (!ok) { $('register-error').textContent = 'Please correct the highlighted fields.'; $('register-error').hidden = false; return; } const next = 'DNR' + String(Object.keys(donors).length + 1).padStart(3, '0'); lastGeneratedId = next; donors[next] = { id: next, name, email, total: 0, count: 0, campaigns: 0, hasDonations: false }; $('generated-id-text').textContent = next; $('generated-id-box').hidden = false; }
+    function continueNewDonor() { const donor = donors[lastGeneratedId]; if (!donor) return; loadDonor(donor); openApp('donor'); }
+
+    function loadDonor(donor) { $('donor-page-title').textContent = donor.hasDonations ? 'My donation statement.' : 'My donor profile.'; $('statement-name').textContent = donor.name; $('statement-email').innerHTML = 'Verified donor · Email protected: <strong>' + maskEmail(donor.email) + '</strong>'; $('statement-total').textContent = formatMoney(donor.total); $('statement-count').textContent = donor.count; $('statement-campaigns').textContent = donor.campaigns; if (donor.hasDonations) { $('donation-history-note').textContent = "Only this donor's records are shown."; $('donation-history-body').innerHTML = '<tr><td>2026-06-12</td><td>Flood Relief 2026</td><td>Bank Transfer</td><td>Rs. 75,000</td></tr>'; $('impact-note').textContent = 'Flood Relief 2026 received this donor\'s donation.'; $('impact-chip').textContent = '40% funded'; $('impact-content').innerHTML = '<div><h4>Flood Relief 2026</h4><p>Collected Rs. 200k · Allocated Rs. 60k · Available Rs. 140k</p><div class="progress-line"><span style="--w:40%"></span></div></div><div class="campaign-money"><strong>Rs. 140k</strong><span>still available</span></div>'; $('allocation-body').innerHTML = '<tr><td>Bilal Family</td><td>Ration bags and temporary shelter</td><td>2026-06-18</td><td>Rs. 60,000</td></tr>'; } else { $('donation-history-note').textContent = 'This donor is registered but has no donation records yet.'; $('donation-history-body').innerHTML = '<tr><td colspan="4">No donations recorded yet.</td></tr>'; $('impact-note').textContent = 'No campaign impact yet because this donor has not donated.'; $('impact-chip').textContent = 'No donations'; $('impact-content').innerHTML = '<div><h4>No supported campaign yet</h4><p>After this donor makes a donation, campaign impact will appear here.</p><div class="progress-line"><span style="--w:0%"></span></div></div><div class="campaign-money"><strong>Rs. 0</strong><span>donated</span></div>'; $('allocation-body').innerHTML = '<tr><td colspan="4">No campaign allocation evidence available yet.</td></tr>'; } }
+    function openApp(role) { $('login-screen').hidden = true; $('app-screen').hidden = false; const isAdmin = role === 'admin'; $('admin-nav').hidden = !isAdmin; $('donor-nav').hidden = isAdmin; $('role-title').textContent = isAdmin ? 'Admin Area' : 'Donor Portal'; $('role-desc').textContent = isAdmin ? 'Management pages unlocked.' : 'Read-only verified donor pages.'; showPage(isAdmin ? 'admin-dashboard' : 'donor-statement-page'); }
+    function showPage(pageId) { document.querySelectorAll('.app-page').forEach(page => page.hidden = page.id !== pageId); document.querySelectorAll('[data-page]').forEach(btn => btn.classList.toggle('active', btn.dataset.page === pageId)); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    function logout() { $('app-screen').hidden = true; $('login-screen').hidden = false; setLoginTab('donor'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    function openActionModal(type) { clearActionErrors(); $('action-modal').hidden = false; ['donation-form','allocation-form','campaign-form','export-form'].forEach(id => $(id).hidden = true); if (type === 'donation') { $('donation-form').hidden = false; $('modal-title').textContent = 'Record donation'; $('modal-subtitle').textContent = 'Validate donor, campaign, amount, and method before saving.'; } if (type === 'allocation') { $('allocation-form').hidden = false; $('modal-title').textContent = 'Allocate funds'; $('modal-subtitle').textContent = 'Validate beneficiary, campaign, amount, and available balance.'; } if (type === 'campaign') { $('campaign-form').hidden = false; $('modal-title').textContent = 'Create campaign'; $('modal-subtitle').textContent = 'Create a campaign with target amount and status.'; } if (type === 'export') { $('export-form').hidden = false; $('modal-title').textContent = 'Export report'; $('modal-subtitle').textContent = 'Use browser print and save as PDF for this HTML prototype.'; } }
+    function closeActionModal() { $('action-modal').hidden = true; clearActionErrors(); }
+    function findCampaign(title) { return campaigns.find(c => c.title === title); }
+    function addActivity(kind, title, detail, amount) { activities.unshift({ kind, title, detail, amount }); renderActivities(); }
+    function submitDonation() { clearActionErrors(); const donor = $('donation-donor').value.trim().toUpperCase(); const campaignTitle = $('donation-campaign').value; const amount = moneyNumber($('donation-amount').value); const method = $('donation-method').value.trim(); let ok = true; if (!/^DNR\d{3}$/.test(donor)) { $('donation-donor-error').textContent = 'Use donor ID format like DNR001.'; ok = false; } if (!findCampaign(campaignTitle)) { $('donation-campaign-error').textContent = 'Choose a valid campaign.'; ok = false; } if (!amount || amount <= 0) { $('donation-amount-error').textContent = 'Amount must be greater than zero.'; ok = false; } if (method.length < 2) { $('donation-method-error').textContent = 'Payment method is required.'; ok = false; } if (!ok) return; const c = findCampaign(campaignTitle); c.collected += amount; totalReceived += amount; addActivity('DN', donor + ' donated to ' + campaignTitle, method + ' · just now', amount); renderAll(); closeActionModal(); }
+    function submitAllocation() { clearActionErrors(); const beneficiary = $('allocation-beneficiary').value.trim(); const campaignTitle = $('allocation-campaign').value; const amount = moneyNumber($('allocation-amount').value); const purpose = $('allocation-purpose').value.trim(); const c = findCampaign(campaignTitle); let ok = true; if (beneficiary.length < 2) { $('allocation-beneficiary-error').textContent = 'Beneficiary is required.'; ok = false; } if (!c) { $('allocation-campaign-error').textContent = 'Choose a valid campaign.'; ok = false; } if (!amount || amount <= 0) { $('allocation-amount-error').textContent = 'Amount must be greater than zero.'; ok = false; } if (c && amount > available(c)) { $('allocation-amount-error').textContent = 'Cannot allocate more than available ' + formatFull(available(c)) + '.'; ok = false; } if (purpose.length < 3) { $('allocation-purpose-error').textContent = 'Purpose is required.'; ok = false; } if (!ok) return; c.allocated += amount; totalAllocated += amount; addActivity('AL', 'Funds allocated to ' + beneficiary, campaignTitle + ' · ' + purpose, amount); renderAll(); closeActionModal(); }
+    function submitCampaign() { clearActionErrors(); const title = $('campaign-title').value.trim(); const target = moneyNumber($('campaign-target').value); const status = $('campaign-status').value; const description = $('campaign-description').value.trim(); let ok = true; if (title.length < 3) { $('campaign-title-error').textContent = 'Campaign title is required.'; ok = false; } if (campaigns.some(c => c.title.toLowerCase() === title.toLowerCase())) { $('campaign-title-error').textContent = 'Campaign already exists.'; ok = false; } if (!target || target <= 0) { $('campaign-target-error').textContent = 'Target must be greater than zero.'; ok = false; } if (description.length < 5) { $('campaign-description-error').textContent = 'Description is required.'; ok = false; } if (!ok) return; campaigns.push({ title, description, target, collected: 0, allocated: 0, status }); renderAll(); showPage('campaigns-page'); closeActionModal(); }
+    function generateReport() { reportCounter += 1; reports.unshift({ id: 'RPT' + String(reportCounter).padStart(3, '0'), type: 'Monthly', period: '2026-06', donations: totalReceived, allocations: totalAllocated, balance: totalReceived - totalAllocated, status: 'Ready' }); renderReports(); $('report-status-chip').textContent = 'New report generated'; }
+    function exportPDF() { openActionModal('export'); }
+    function toggleActiveFilter() { showActiveOnly = !showActiveOnly; renderCampaignsPage(); }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      renderAll();
+      $('donor-tab').addEventListener('click', () => setLoginTab('donor'));
+      $('register-tab').addEventListener('click', () => setLoginTab('register'));
+      $('admin-tab').addEventListener('click', () => setLoginTab('admin'));
+      $('donor-login-button').addEventListener('click', donorLogin);
+      $('admin-login-button').addEventListener('click', adminLogin);
+      $('fill-donor-button').addEventListener('click', fillDonorDemo);
+      $('fill-admin-button').addEventListener('click', fillAdminDemo);
+      $('register-button').addEventListener('click', registerDonor);
+      $('continue-new-donor').addEventListener('click', continueNewDonor);
+      $('logout-button').addEventListener('click', logout);
+      $('open-donation-modal').addEventListener('click', () => openActionModal('donation'));
+      $('open-allocation-modal').addEventListener('click', () => openActionModal('allocation'));
+      $('open-campaign-modal').addEventListener('click', () => openActionModal('campaign'));
+      $('filter-active-button').addEventListener('click', toggleActiveFilter);
+      $('generate-report-button').addEventListener('click', generateReport);
+      $('export-pdf-button').addEventListener('click', exportPDF);
+      $('close-modal').addEventListener('click', closeActionModal);
+      $('cancel-donation').addEventListener('click', closeActionModal);
+      $('cancel-allocation').addEventListener('click', closeActionModal);
+      $('cancel-campaign').addEventListener('click', closeActionModal);
+      $('cancel-export').addEventListener('click', closeActionModal);
+      $('submit-donation').addEventListener('click', submitDonation);
+      $('submit-allocation').addEventListener('click', submitAllocation);
+      $('submit-campaign').addEventListener('click', submitCampaign);
+      $('print-report').addEventListener('click', () => window.print());
+      $('action-modal').addEventListener('click', (event) => { if (event.target.id === 'action-modal') closeActionModal(); });
+      document.querySelectorAll('[data-page]').forEach(btn => btn.addEventListener('click', () => showPage(btn.dataset.page)));
+    });
+  </script>
+</body>
+</html>

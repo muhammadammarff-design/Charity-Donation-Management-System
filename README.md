@@ -94,8 +94,9 @@ This keeps the viva focused on C++ OOP while still giving the project a polished
 
 ### Admin Access
 
-- Streamlit-level demo login protects admin CRUD pages
+- Streamlit-level admin login protects management pages
 - Default demo credentials: `admin` / `admin123`
+- Admin can record donations, allocate funds, create campaigns, filter active campaigns, generate reports, and export a PDF summary
 - Main C++ OOP logic remains separate from this GUI-level access control
 
 ### Validation Evidence
@@ -296,7 +297,18 @@ streamlit_app.py
 
 ### Important Persistence Note
 
-The local text-file database works perfectly for local demo and viva. On Streamlit Cloud, local files may reset after app restart/redeployment. That is why the GUI includes a **Seed Demo Data** button.
+The C++ core saves data dynamically into text files in the `data/` folder. On a local computer, this persistence works normally.
+
+On Streamlit Cloud, local files may reset after app restart/redeployment. To save changed data back into the GitHub repository, configure optional GitHub sync in Streamlit secrets:
+
+```toml
+GITHUB_TOKEN = "your_fine_grained_token_with_contents_read_write"
+GITHUB_REPO = "your-username/Charity-Donation-Management-System"
+GITHUB_BRANCH = "main"
+GITHUB_DATA_PREFIX = "data"
+```
+
+After this is configured, admin data-changing actions can sync the text data files to GitHub. Without these secrets, the app still works but cloud changes are demo-session/local only.
 
 For final marking, submit:
 
