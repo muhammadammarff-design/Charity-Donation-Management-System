@@ -11,6 +11,7 @@ import urllib.request
 from datetime import date
 from io import BytesIO, StringIO
 from pathlib import Path
+from textwrap import dedent
 from typing import Iterable, List, Tuple
 
 import pandas as pd
@@ -24,6 +25,20 @@ EXE = BUILD_DIR / ("charity_app.exe" if platform.system() == "Windows" else "cha
 DATA_DIR = ROOT / "data"
 DATA_FILES = ["donors.txt", "beneficiaries.txt", "campaigns.txt", "donations.txt", "allocations.txt", "reports.txt"]
 
+
+
+def render_html(markup: str, *args, **kwargs) -> None:
+    """Render HTML without Markdown treating indented blocks as code.
+
+    Streamlit markdown parses indented HTML as code blocks, which broke the UI.
+    st.html avoids Markdown parsing on newer Streamlit versions; fallback keeps older versions working.
+    """
+    cleaned = dedent(str(markup)).strip()
+    if hasattr(st, "html"):
+        st.html(cleaned)
+    else:
+        st.markdown(cleaned, unsafe_allow_html=True)
+
 st.set_page_config(
     page_title="Amanah Charity System",
     page_icon="♡",
@@ -31,7 +46,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-st.markdown(
+render_html(
     """
     <style>
       :root {
@@ -910,7 +925,7 @@ def beneficiary_name(data: dict[str, pd.DataFrame], beneficiary_id: str) -> str:
 
 # ----------------------------- Design components -----------------------------
 def brand_strip() -> None:
-    st.markdown(
+    render_html(
         """
         <div class="brand-strip">
           <div class="brand-left">
@@ -928,7 +943,7 @@ def brand_strip() -> None:
 
 
 def page_header(eyebrow: str, title: str, description: str, actions_html: str = "") -> None:
-    st.markdown(
+    render_html(
         f"""
         <div class="page-card">
           <div class="page-head-row">
@@ -956,7 +971,7 @@ def metric_grid(metrics: list[tuple[str, str, str]]) -> None:
         """
         for label, value, help_text in metrics
     )
-    st.markdown(f"<div class='metric-grid'>{cards}</div>", unsafe_allow_html=True)
+    render_html(f"<div class='metric-grid'>{cards}</div>", unsafe_allow_html=True)
 
 
 def campaign_rows(campaigns: pd.DataFrame, limit: int | None = None) -> str:
@@ -1089,7 +1104,7 @@ def build_report_pdf(data: dict[str, pd.DataFrame]) -> bytes:
 # ----------------------------- Login -----------------------------
 def login_page() -> None:
     brand_strip()
-    st.markdown("<div class='login-card'><div class='login-title'>Login</div><p class='login-subtitle'>Choose donor, register donor, or admin access.</p>", unsafe_allow_html=True)
+    render_html("<div class='login-card'><div class='login-title'>Login</div><p class='login-subtitle'>Choose donor, register donor, or admin access.</p>", unsafe_allow_html=True)
     tab = st.radio("Choose access", ["Donor", "Register", "Admin"], horizontal=True, label_visibility="collapsed")
 
     if tab == "Donor":
@@ -1150,7 +1165,7 @@ def login_page() -> None:
             else:
                 st.error("Wrong admin credentials.")
 
-    st.markdown(
+    render_html(
         "<div class='security-note'>Prototype note: final data changes are stored through the C++ file system. GitHub sync needs a GitHub token configured in Streamlit secrets.</div></div>",
         unsafe_allow_html=True,
     )
@@ -1185,7 +1200,7 @@ def admin_dashboard(data: dict[str, pd.DataFrame]) -> None:
         ("Available balance", format_money(summary["remainingBalance"]), "Remaining amount for upcoming distributions."),
     ])
 
-    st.markdown(
+    render_html(
         f"""
         <section class="panel-card">
           <div class="panel-title"><div><h3>Priority actions</h3><p>Only important alerts are shown here so the dashboard stays useful.</p></div><span class="chip amber">Needs attention</span></div>
@@ -1198,7 +1213,7 @@ def admin_dashboard(data: dict[str, pd.DataFrame]) -> None:
     active = data["campaigns"]
     if not active.empty and "status" in active.columns:
         active = active[active["status"].str.lower() == "active"]
-    st.markdown(
+    render_html(
         f"""
         <section class="panel-card">
           <div class="panel-title"><div><h3>Campaign progress</h3><p>Readable progress list instead of many competing charts.</p></div><span class="chip blue">{len(active)} active</span></div>
@@ -1208,7 +1223,7 @@ def admin_dashboard(data: dict[str, pd.DataFrame]) -> None:
         unsafe_allow_html=True,
     )
 
-    st.markdown(
+    render_html(
         f"""
         <section class="panel-card">
           <div class="panel-title"><div><h3>Recent activity</h3><p>New donations and allocations appear here after using the action buttons above.</p></div><span class="chip">Live data</span></div>
@@ -1220,7 +1235,7 @@ def admin_dashboard(data: dict[str, pd.DataFrame]) -> None:
 
 
 def record_donation_panel(data: dict[str, pd.DataFrame]) -> None:
-    st.markdown("<section class='panel-card'><div class='panel-title'><div><h3>Record donation</h3><p>Validate donor, campaign, amount, and method before saving.</p></div></div>", unsafe_allow_html=True)
+    render_html("<section class='panel-card'><div class='panel-title'><div><h3>Record donation</h3><p>Validate donor, campaign, amount, and method before saving.</p></div></div>", unsafe_allow_html=True)
     donors = option_list(data["donors"], "id", "name")
     campaigns = option_list(data["campaigns"], "id", "title")
     with st.form("record_donation_form"):
@@ -1245,11 +1260,11 @@ def record_donation_panel(data: dict[str, pd.DataFrame]) -> None:
     if cancel:
         st.session_state.action_panel = None
         refresh()
-    st.markdown("</section>", unsafe_allow_html=True)
+    render_html("</section>", unsafe_allow_html=True)
 
 
 def allocate_funds_panel(data: dict[str, pd.DataFrame]) -> None:
-    st.markdown("<section class='panel-card'><div class='panel-title'><div><h3>Allocate funds</h3><p>Validate beneficiary, campaign, amount, and available balance before saving.</p></div></div>", unsafe_allow_html=True)
+    render_html("<section class='panel-card'><div class='panel-title'><div><h3>Allocate funds</h3><p>Validate beneficiary, campaign, amount, and available balance before saving.</p></div></div>", unsafe_allow_html=True)
     beneficiaries = option_list(data["beneficiaries"], "id", "name")
     campaigns = option_list(data["campaigns"], "id", "title")
     with st.form("allocation_form"):
@@ -1274,7 +1289,7 @@ def allocate_funds_panel(data: dict[str, pd.DataFrame]) -> None:
     if cancel:
         st.session_state.action_panel = None
         refresh()
-    st.markdown("</section>", unsafe_allow_html=True)
+    render_html("</section>", unsafe_allow_html=True)
 
 
 def campaigns_page(data: dict[str, pd.DataFrame]) -> None:
@@ -1288,7 +1303,7 @@ def campaigns_page(data: dict[str, pd.DataFrame]) -> None:
         st.session_state.filter_active = filter_active
 
     if st.session_state.get("show_campaign_form"):
-        st.markdown("<section class='panel-card'><div class='panel-title'><div><h3>Create campaign</h3><p>Campaign is saved through the C++ core.</p></div></div>", unsafe_allow_html=True)
+        render_html("<section class='panel-card'><div class='panel-title'><div><h3>Create campaign</h3><p>Campaign is saved through the C++ core.</p></div></div>", unsafe_allow_html=True)
         with st.form("create_campaign_form"):
             title = st.text_input("Campaign title", value="Winter Clothing Drive")
             description = st.text_input("Description", value="Warm clothing support for low-income families")
@@ -1308,12 +1323,12 @@ def campaigns_page(data: dict[str, pd.DataFrame]) -> None:
         if cancel:
             st.session_state.show_campaign_form = False
             refresh()
-        st.markdown("</section>", unsafe_allow_html=True)
+        render_html("</section>", unsafe_allow_html=True)
 
     campaigns = data["campaigns"]
     if filter_active and not campaigns.empty and "status" in campaigns.columns:
         campaigns = campaigns[campaigns["status"].str.lower() == "active"]
-    st.markdown(
+    render_html(
         f"""
         <section class="panel-card">
           <div class="panel-title"><div><h3>Campaign list</h3><p>Target, collected, allocated, available amount, and status.</p></div><span class="chip blue">{'Active only' if filter_active else 'Showing all'}</span></div>
@@ -1352,9 +1367,9 @@ def reports_page(data: dict[str, pd.DataFrame]) -> None:
     ])
 
     reports = data["reports"]
-    st.markdown("<section class='panel-card'><div class='panel-title'><div><h3>Generated reports</h3><p>Clear table for screenshots and report evidence.</p></div></div>", unsafe_allow_html=True)
+    render_html("<section class='panel-card'><div class='panel-title'><div><h3>Generated reports</h3><p>Clear table for screenshots and report evidence.</p></div></div>", unsafe_allow_html=True)
     st.dataframe(reports, use_container_width=True, hide_index=True)
-    st.markdown("</section>", unsafe_allow_html=True)
+    render_html("</section>", unsafe_allow_html=True)
 
 
 # ----------------------------- Donor pages -----------------------------
@@ -1369,7 +1384,7 @@ def donor_statement_page(data: dict[str, pd.DataFrame]) -> None:
     total = float(statement.get("totalDonated", 0))
 
     page_header("Donor portal", "My donation statement.", "Read-only view. Donors see their own records, not admin CRUD tools.")
-    st.markdown(
+    render_html(
         f"""
         <div class="statement-grid">
           <div class="statement-card">
@@ -1388,12 +1403,12 @@ def donor_statement_page(data: dict[str, pd.DataFrame]) -> None:
 
     ok, donations, output = command_table(["donor-donations", donor_id, email])
     donations = numeric_columns(donations, ["amount"])
-    st.markdown("<section class='panel-card'><div class='panel-title'><div><h3>Donation history</h3><p>Only this donor's records are shown.</p></div></div>", unsafe_allow_html=True)
+    render_html("<section class='panel-card'><div class='panel-title'><div><h3>Donation history</h3><p>Only this donor's records are shown.</p></div></div>", unsafe_allow_html=True)
     if ok and not donations.empty:
         st.dataframe(donations, use_container_width=True, hide_index=True)
     else:
         st.info("No donations recorded yet.")
-    st.markdown("</section>", unsafe_allow_html=True)
+    render_html("</section>", unsafe_allow_html=True)
 
 
 def donor_impact_page(data: dict[str, pd.DataFrame]) -> None:
@@ -1403,7 +1418,7 @@ def donor_impact_page(data: dict[str, pd.DataFrame]) -> None:
 
     ok, campaigns, output = command_table(["donor-campaigns", donor_id, email])
     campaigns = numeric_columns(campaigns, ["targetAmount", "collectedAmount", "allocatedAmount", "availableBalance", "progressPercent"])
-    st.markdown(
+    render_html(
         f"""
         <section class="panel-card">
           <div class="panel-title"><div><h3>Supported campaigns</h3><p>Campaigns connected to this donor's donation history.</p></div><span class="chip blue">{len(campaigns)} supported</span></div>
@@ -1415,12 +1430,12 @@ def donor_impact_page(data: dict[str, pd.DataFrame]) -> None:
 
     ok, allocations, output = command_table(["donor-allocations", donor_id, email])
     allocations = numeric_columns(allocations, ["amount"])
-    st.markdown("<section class='panel-card'><div class='panel-title'><div><h3>Allocation evidence</h3><p>Beneficiary contact information is hidden from donor view.</p></div></div>", unsafe_allow_html=True)
+    render_html("<section class='panel-card'><div class='panel-title'><div><h3>Allocation evidence</h3><p>Beneficiary contact information is hidden from donor view.</p></div></div>", unsafe_allow_html=True)
     if ok and not allocations.empty:
         st.dataframe(allocations, use_container_width=True, hide_index=True)
     else:
         st.info("No campaign allocation evidence available yet.")
-    st.markdown("</section>", unsafe_allow_html=True)
+    render_html("</section>", unsafe_allow_html=True)
 
 
 # ----------------------------- Main app -----------------------------
