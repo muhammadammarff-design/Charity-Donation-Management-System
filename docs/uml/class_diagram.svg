@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="920" viewBox="0 0 1320 920">
+  <defs>
+    <style>
+      .title{font:700 28px Arial, sans-serif;fill:#0f172a}.box{fill:#ffffff;stroke:#0f766e;stroke-width:2;rx:12}.head{fill:#ccfbf1;stroke:#0f766e;stroke-width:2}.htext{font:700 16px Arial,sans-serif;fill:#134e4a}.text{font:13px Consolas,monospace;fill:#111827}.line{stroke:#334155;stroke-width:2;fill:none}.dash{stroke:#64748b;stroke-width:2;fill:none;stroke-dasharray:7 5}.arrow{fill:#334155}.note{font:13px Arial,sans-serif;fill:#475569}.rel{font:12px Arial,sans-serif;fill:#475569}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" class="arrow"/></marker>
+    <marker id="triangle" markerWidth="12" markerHeight="12" refX="1" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M11,1 L1,6 L11,11 z" fill="#fff" stroke="#334155" stroke-width="1.5"/></marker>
+  </defs>
+
+  <text x="660" y="42" text-anchor="middle" class="title">UML Class Diagram - Charity &amp; Donation Management System</text>
+  <text x="660" y="68" text-anchor="middle" class="note">C++ OOP core used by Streamlit as a thin GUI wrapper</text>
+
+  <!-- Person -->
+  <rect x="520" y="95" width="280" height="180" class="box"/>
+  <rect x="520" y="95" width="280" height="36" class="head"/>
+  <text x="660" y="119" text-anchor="middle" class="htext">Person</text>
+  <text x="535" y="154" class="text"># id : string</text>
+  <text x="535" y="176" class="text"># name : string</text>
+  <text x="535" y="198" class="text"># age : int</text>
+  <text x="535" y="220" class="text"># contact : string</text>
+  <text x="535" y="242" class="text">+ virtual displayInfo()</text>
+
+  <!-- Donor -->
+  <rect x="260" y="350" width="280" height="205" class="box"/>
+  <rect x="260" y="350" width="280" height="36" class="head"/>
+  <text x="400" y="374" text-anchor="middle" class="htext">Donor</text>
+  <text x="275" y="409" class="text">- email : string</text>
+  <text x="275" y="431" class="text">- donorType : string</text>
+  <text x="275" y="453" class="text">- totalDonated : double</text>
+  <text x="275" y="485" class="text">+ displayInfo() override</text>
+  <text x="275" y="507" class="text">+ operator+(Donor)</text>
+  <text x="275" y="529" class="text">+ operator&gt;(Donor)</text>
+
+  <!-- Beneficiary -->
+  <rect x="780" y="350" width="300" height="205" class="box"/>
+  <rect x="780" y="350" width="300" height="36" class="head"/>
+  <text x="930" y="374" text-anchor="middle" class="htext">Beneficiary</text>
+  <text x="795" y="409" class="text">- familySize : int</text>
+  <text x="795" y="431" class="text">- needType : string</text>
+  <text x="795" y="453" class="text">- campaignId : string</text>
+  <text x="795" y="475" class="text">- totalReceived : double</text>
+  <text x="795" y="507" class="text">+ displayInfo() override</text>
+  <text x="795" y="529" class="text">+ addReceivedAmount()</text>
+
+  <!-- Core classes -->
+  <rect x="45" y="650" width="240" height="180" class="box"/>
+  <rect x="45" y="650" width="240" height="36" class="head"/>
+  <text x="165" y="674" text-anchor="middle" class="htext">Donation</text>
+  <text x="60" y="708" class="text">- donorId</text><text x="60" y="730" class="text">- campaignId</text><text x="60" y="752" class="text">- amount</text><text x="60" y="784" class="text">+ operator+(Donation)</text><text x="60" y="806" class="text">+ operator&gt;(Donation)</text>
+
+  <rect x="325" y="650" width="250" height="180" class="box"/>
+  <rect x="325" y="650" width="250" height="36" class="head"/>
+  <text x="450" y="674" text-anchor="middle" class="htext">Campaign</text>
+  <text x="340" y="708" class="text">- targetAmount</text><text x="340" y="730" class="text">- collectedAmount</text><text x="340" y="752" class="text">- allocatedAmount</text><text x="340" y="784" class="text">+ getAvailableBalance()</text><text x="340" y="806" class="text">+ operator&lt;(Campaign)</text>
+
+  <rect x="615" y="650" width="280" height="180" class="box"/>
+  <rect x="615" y="650" width="280" height="36" class="head"/>
+  <text x="755" y="674" text-anchor="middle" class="htext">FundAllocation</text>
+  <text x="630" y="708" class="text">- beneficiaryId</text><text x="630" y="730" class="text">- campaignId</text><text x="630" y="752" class="text">- amount</text><text x="630" y="784" class="text">+ serialize()</text><text x="630" y="806" class="text">+ displayInfo()</text>
+
+  <rect x="935" y="650" width="250" height="180" class="box"/>
+  <rect x="935" y="650" width="250" height="36" class="head"/>
+  <text x="1060" y="674" text-anchor="middle" class="htext">Report</text>
+  <text x="950" y="708" class="text">- reportType</text><text x="950" y="730" class="text">- totalDonations</text><text x="950" y="752" class="text">- totalAllocations</text><text x="950" y="784" class="text">+ operator+(Report)</text><text x="950" y="806" class="text">+ operator&gt;(Report)</text>
+
+  <!-- System -->
+  <rect x="40" y="95" width="320" height="210" class="box"/>
+  <rect x="40" y="95" width="320" height="36" class="head"/>
+  <text x="200" y="119" text-anchor="middle" class="htext">CharitySystem</text>
+  <text x="55" y="154" class="text">- vectors of all entities</text>
+  <text x="55" y="176" class="text">+ addDonor()</text>
+  <text x="55" y="198" class="text">+ addCampaign()</text>
+  <text x="55" y="220" class="text">+ recordDonation()</text>
+  <text x="55" y="242" class="text">+ allocateFunds()</text>
+  <text x="55" y="264" class="text">+ generateReport()</text>
+  <text x="55" y="286" class="text">+ saveAll()/loadAll()</text>
+
+  <rect x="965" y="110" width="270" height="155" class="box"/>
+  <rect x="965" y="110" width="270" height="36" class="head"/>
+  <text x="1100" y="134" text-anchor="middle" class="htext">FileManager</text>
+  <text x="980" y="168" class="text">+ readLines()</text>
+  <text x="980" y="190" class="text">+ writeLines()</text>
+  <text x="980" y="212" class="text">+ ensureDataDirectory()</text>
+  <text x="980" y="234" class="text">Text files database</text>
+
+  <!-- relationships -->
+  <path d="M520 260 L415 350" class="line" marker-start="url(#triangle)"/>
+  <path d="M800 260 L915 350" class="line" marker-start="url(#triangle)"/>
+  <text x="430" y="315" class="rel">inherits</text>
+  <text x="840" y="315" class="rel">inherits</text>
+
+  <path d="M360 180 L520 180" class="line" marker-end="url(#arrow)"/>
+  <path d="M360 215 C520 325 660 620 450 650" class="line" marker-end="url(#arrow)"/>
+  <path d="M360 245 C560 345 650 590 755 650" class="line" marker-end="url(#arrow)"/>
+  <path d="M210 305 C190 430 170 550 165 650" class="line" marker-end="url(#arrow)"/>
+  <path d="M360 280 C640 385 900 520 1060 650" class="line" marker-end="url(#arrow)"/>
+  <text x="375" y="170" class="rel">manages</text>
+
+  <path d="M965 190 L800 190" class="dash" marker-end="url(#arrow)"/>
+  <text x="850" y="180" class="rel">uses for persistence</text>
+
+  <path d="M165 650 C210 600 300 560 400 555" class="dash" marker-end="url(#arrow)"/>
+  <text x="210" y="615" class="rel">donorId</text>
+  <path d="M210 650 C285 610 380 600 450 650" class="dash" marker-end="url(#arrow)"/>
+  <text x="300" y="628" class="rel">campaignId</text>
+  <path d="M755 650 C820 600 890 565 930 555" class="dash" marker-end="url(#arrow)"/>
+  <text x="815" y="610" class="rel">beneficiaryId</text>
+  <path d="M755 650 C680 610 560 600 450 650" class="dash" marker-end="url(#arrow)"/>
+  <text x="600" y="628" class="rel">campaignId</text>
+</svg>

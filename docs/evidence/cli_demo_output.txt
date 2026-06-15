@@ -1,0 +1,34 @@
+$ ./build/charity_app seed
+SUCCESS|Demo data loaded successfully.
+
+$ ./build/charity_app summary
+metric|value
+donors|3
+beneficiaries|3
+campaigns|3
+donations|4
+allocations|3
+totalDonations|345000.00
+totalAllocations|125000.00
+remainingBalance|220000.00
+
+$ ./build/charity_app list campaigns
+id|title|description|targetAmount|collectedAmount|allocatedAmount|availableBalance|progressPercent|startDate|endDate|status
+CAM001|Flood Relief 2026|Emergency food, shelter, and medicines for flood affected families.|500000.00|200000.00|60000.00|140000.00|40.00|2026-06-01|2026-07-31|Active
+CAM002|Education Support|School fees, books, bags, and uniforms for deserving students.|300000.00|90000.00|35000.00|55000.00|30.00|2026-06-05|2026-08-30|Active
+CAM003|Medical Aid Drive|Treatment and medicines for low-income patients.|400000.00|55000.00|30000.00|25000.00|13.75|2026-06-10|2026-09-15|Active
+
+$ ./build/charity_app record-donation DNR001 CAM001 -50 2026-06-14 Cash Invalid
+ERROR|Donation amount must be greater than zero.
+
+$ ./build/charity_app allocate-funds BEN001 CAM001 999999999 2026-06-14 OverAllocation Admin
+ERROR|Allocation exceeds available campaign balance. Available: 140000.00
+
+$ ./build/charity_app generate-report campaign CAM001
+SUCCESS|Campaign report generated successfully.|RPT003
+
+$ ./build/charity_app list reports
+id|reportType|period|totalDonations|totalAllocations|remainingBalance|generatedDate|remarks
+RPT001|Monthly|2026-06|345000.00|125000.00|220000.00|2026-06-14|Generated monthly transparency report.
+RPT002|Campaign|CAM001 - Flood Relief 2026|200000.00|60000.00|140000.00|2026-06-14|Generated campaign-level transparency report.
+RPT003|Campaign|CAM001 - Flood Relief 2026|200000.00|60000.00|140000.00|2026-06-14|Generated campaign-level transparency report.

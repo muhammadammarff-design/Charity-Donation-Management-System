@@ -1,0 +1,102 @@
+classDiagram
+    class Person {
+        #string id
+        #string name
+        #int age
+        #string contact
+        #string address
+        +displayInfo() string
+    }
+
+    class Donor {
+        -string email
+        -string donorType
+        -double totalDonated
+        +addDonationAmount(double)
+        +operator+(Donor) double
+        +operator>(Donor) bool
+        +serialize() string
+    }
+
+    class Beneficiary {
+        -int familySize
+        -string needType
+        -string campaignId
+        -double totalReceived
+        +addReceivedAmount(double)
+        +serialize() string
+    }
+
+    class Campaign {
+        -string title
+        -double targetAmount
+        -double collectedAmount
+        -double allocatedAmount
+        +getAvailableBalance() double
+        +getProgressPercent() double
+        +operator+(Campaign) double
+        +operator<(Campaign) bool
+    }
+
+    class Donation {
+        -string donorId
+        -string campaignId
+        -double amount
+        -string date
+        +operator+(Donation) double
+        +operator>(Donation) bool
+    }
+
+    class FundAllocation {
+        -string beneficiaryId
+        -string campaignId
+        -double amount
+        -string purpose
+        +serialize() string
+    }
+
+    class Report {
+        -string reportType
+        -string period
+        -double totalDonations
+        -double totalAllocations
+        -double remainingBalance
+        +operator+(Report) Report
+        +operator>(Report) bool
+    }
+
+    class FileManager {
+        +readLines(fileName) vector~string~
+        +writeLines(fileName, lines) bool
+        +ensureDataDirectory() void
+    }
+
+    class CharitySystem {
+        -vector~Donor~ donors
+        -vector~Beneficiary~ beneficiaries
+        -vector~Campaign~ campaigns
+        -vector~Donation~ donations
+        -vector~FundAllocation~ allocations
+        -vector~Report~ reports
+        +addDonor(...) OperationResult
+        +addCampaign(...) OperationResult
+        +recordDonation(...) OperationResult
+        +allocateFunds(...) OperationResult
+        +generateMonthlyReport(...) OperationResult
+        +saveAll() bool
+    }
+
+    Person <|-- Donor
+    Person <|-- Beneficiary
+    CharitySystem o-- Donor
+    CharitySystem o-- Beneficiary
+    CharitySystem o-- Campaign
+    CharitySystem o-- Donation
+    CharitySystem o-- FundAllocation
+    CharitySystem o-- Report
+    Donation --> Donor : donorId
+    Donation --> Campaign : campaignId
+    FundAllocation --> Beneficiary : beneficiaryId
+    FundAllocation --> Campaign : campaignId
+    Beneficiary --> Campaign : campaignId
+    CharitySystem ..> FileManager : uses

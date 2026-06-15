@@ -1,0 +1,4 @@
+DNT001|DNR001|CAM001|75000.00|2026-06-12|Bank Transfer|Initial flood relief support
+DNT002|DNR002|CAM001|125000.00|2026-06-14|Cheque|Corporate charity donation
+DNT003|DNR002|CAM002|90000.00|2026-06-15|Bank Transfer|Education sponsorship
+DNT004|DNR003|CAM003|55000.00|2026-06-16|Cash|Medical aid donation

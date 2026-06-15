@@ -1,0 +1,3 @@
+DNR001|Ahmed Khan|35|+92 300 1111111|ahmed.khan@example.com|Lahore|Individual|75000.00
+DNR002|Fatima Foundation|12|+92 321 2222222|contact@fatimafoundation.org|Karachi|Organization|215000.00
+DNR003|Sara Ali|28|+92 333 3333333|sara.ali@example.com|Islamabad|Individual|55000.00

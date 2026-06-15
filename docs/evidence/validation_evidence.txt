@@ -1,0 +1,9 @@
+testCase|input|result
+Empty donor name|name=''|Donor name cannot be empty.
+Invalid donor age|age=-5|Age must be between 1 and 120.
+Invalid donor email|email='bad-email'|Email format is invalid. Use example@domain.com.
+Negative campaign target|target=-1000|Campaign target amount must be greater than zero.
+Invalid campaign date range|start=2026-07-10 end=2026-06-10|End date cannot be earlier than start date.
+Negative donation amount|amount=-50|Donation amount must be greater than zero.
+Invalid donation date|date=2026-99-99|Donation date must be valid and in YYYY-MM-DD format.
+Allocation greater than balance|amount=999999999|Allocation exceeds available campaign balance. Available: 140000.00

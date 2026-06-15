@@ -1,0 +1,8 @@
+concept|evidence
+Inheritance|Donor and Beneficiary inherit from Person.
+Polymorphism|displayInfo() is virtual in Person and overridden in Donor and Beneficiary.
+Runtime polymorphism|Donor => ID: DNR001, Name: Ahmed Khan, Age: 35, Contact: +92 300 1111111, Address: Lahore, Email: ahmed.khan@example.com, Type: Individual, Total Donated: 75000.00
+operator+ on Donor|Combined donation total = 290000.00
+operator> on Donor|First donor greater than second = false
+operator+ on Donation|Combined donation amount = 200000.00
+operator+ on Report|Report => ID: RPT001+RPT002, Type: Combined, Period: 2026-06 + CAM001 - Flood Relief 2026, Donations: 545000.00, Allocations: 185000.00, Remaining: 360000.00, Generated: 2026-06-14

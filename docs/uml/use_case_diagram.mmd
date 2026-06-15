@@ -1,0 +1,35 @@
+flowchart LR
+    Admin((Admin / Charity Staff))
+    DonorActor((Donor))
+
+    subgraph System[Charity & Donation Management System]
+        UC1[Manage Donors]
+        UC2[Manage Campaigns]
+        UC3[Manage Beneficiaries]
+        UC4[Record Donations]
+        UC5[Allocate Funds]
+        UC6[Generate Reports]
+        UC7[Validate Inputs]
+        UC8[Save/Load Text Files]
+        UC9[View Dashboard]
+    end
+
+    Admin --> UC1
+    Admin --> UC2
+    Admin --> UC3
+    Admin --> UC4
+    Admin --> UC5
+    Admin --> UC6
+    Admin --> UC9
+    DonorActor --> UC4
+    UC1 --> UC7
+    UC2 --> UC7
+    UC3 --> UC7
+    UC4 --> UC7
+    UC5 --> UC7
+    UC1 --> UC8
+    UC2 --> UC8
+    UC3 --> UC8
+    UC4 --> UC8
+    UC5 --> UC8
+    UC6 --> UC8

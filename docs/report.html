@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Charity & Donation Management System - OOP Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.55; color: #111827; margin: 0; background: #f8fafc; }
+    .page { max-width: 1060px; margin: 0 auto; background: white; padding: 42px 56px; box-shadow: 0 0 35px rgba(15,23,42,.10); }
+    .cover { background: linear-gradient(135deg, #0f766e, #134e4a); color: white; padding: 42px; border-radius: 22px; margin-bottom: 34px; }
+    .cover h1 { margin: 0 0 12px; font-size: 38px; }
+    .cover p { margin: 5px 0; font-size: 16px; }
+    h2 { color: #0f766e; border-bottom: 2px solid #ccfbf1; padding-bottom: 8px; margin-top: 34px; }
+    h3 { color: #134e4a; margin-top: 24px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    th, td { border: 1px solid #d1d5db; padding: 10px 12px; text-align: left; vertical-align: top; }
+    th { background: #ecfeff; color: #134e4a; }
+    code, pre { background: #f1f5f9; border-radius: 8px; }
+    code { padding: 2px 5px; }
+    pre { padding: 14px; overflow-x: auto; border: 1px solid #e2e8f0; }
+    img { max-width: 100%; border: 1px solid #e5e7eb; border-radius: 12px; margin: 12px 0 22px; background: white; }
+    .note { padding: 14px 18px; background: #f0fdfa; border-left: 5px solid #0f766e; border-radius: 8px; }
+    .warning { padding: 14px 18px; background: #fff7ed; border-left: 5px solid #f97316; border-radius: 8px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .card { border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; background: #ffffff; }
+    @media print { body { background: white; } .page { box-shadow: none; padding: 0; } .cover { break-inside: avoid; } h2 { break-after: avoid; } img { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="cover">
+      <h1>Charity & Donation Management System</h1>
+      <p><strong>OOP Project Report</strong></p>
+      <p><strong>Language:</strong> C++17 &nbsp; | &nbsp; <strong>GUI:</strong> Streamlit wrapper</p>
+      <p><strong>Team:</strong> Ali Raza (2540010), Muhammad Ammar (2540004), Taha Ali (2540008)</p>
+    </section>
+
+    <h2>1. Problem Definition</h2>
+    <p>Small charity organizations often manage donors, campaigns, beneficiaries, donations, and expenses using paper files or simple spreadsheets. This creates weak transparency, scattered records, and difficulty proving where donations were used.</p>
+    <p>The system solves this problem by linking every donation with a donor and campaign, and every allocation with a beneficiary and campaign.</p>
+
+    <h2>2. Solution Design</h2>
+    <div class="note">
+      <strong>Architecture rule:</strong> C++ is the real project; Streamlit is only a thin GUI wrapper. All validation, file handling, reports, and OOP logic are implemented in C++.
+    </div>
+    <p>The application has two layers:</p>
+    <ul>
+      <li><strong>C++ OOP Core:</strong> classes, CRUD, validation, reports, and text-file persistence.</li>
+      <li><strong>Streamlit GUI:</strong> forms, dashboard, charts, tables, and evidence pages.</li>
+    </ul>
+
+    <h2>3. Tools and Technologies</h2>
+    <table>
+      <tr><th>Area</th><th>Technology</th></tr>
+      <tr><td>Core Language</td><td>C++17</td></tr>
+      <tr><td>GUI</td><td>Streamlit</td></tr>
+      <tr><td>Storage</td><td>Text files under <code>data/</code></td></tr>
+      <tr><td>Build</td><td><code>g++</code>, <code>build_core.py</code>, <code>Makefile</code></td></tr>
+      <tr><td>Documentation</td><td>Markdown, HTML, SVG UML</td></tr>
+    </table>
+
+    <h2>4. UML Diagrams</h2>
+    <h3>4.1 Class Diagram</h3>
+    <img src="uml/class_diagram.svg" alt="UML Class Diagram" />
+    <h3>4.2 Use Case Diagram</h3>
+    <img src="uml/use_case_diagram.svg" alt="UML Use Case Diagram" />
+
+    <h2>5. Class Structure</h2>
+    <table>
+      <tr><th>Class</th><th>Type</th><th>Responsibility</th></tr>
+      <tr><td><code>Person</code></td><td>Base</td><td>Stores shared identity fields and virtual <code>displayInfo()</code>.</td></tr>
+      <tr><td><code>Donor</code></td><td>Derived</td><td>Represents donors and tracks total donations.</td></tr>
+      <tr><td><code>Beneficiary</code></td><td>Derived</td><td>Represents aid receivers linked to campaigns.</td></tr>
+      <tr><td><code>Campaign</code></td><td>Core</td><td>Tracks target, collected, allocated, available balance, and progress.</td></tr>
+      <tr><td><code>Donation</code></td><td>Core</td><td>Stores a single donation transaction.</td></tr>
+      <tr><td><code>FundAllocation</code></td><td>Core</td><td>Stores aid/fund distribution to beneficiaries.</td></tr>
+      <tr><td><code>Report</code></td><td>Summary</td><td>Stores monthly or campaign transparency reports.</td></tr>
+      <tr><td><code>FileManager</code></td><td>Utility</td><td>Reads and writes text files.</td></tr>
+      <tr><td><code>CharitySystem</code></td><td>Controller</td><td>Coordinates all operations and keeps records consistent.</td></tr>
+    </table>
+
+    <h2>6. OOP Concepts</h2>
+    <table>
+      <tr><th>Concept</th><th>Implementation</th></tr>
+      <tr><td>Classes and Objects</td><td>All entities are implemented as C++ classes.</td></tr>
+      <tr><td>Encapsulation</td><td>Private/protected data members with public methods.</td></tr>
+      <tr><td>Inheritance</td><td><code>Donor</code> and <code>Beneficiary</code> inherit from <code>Person</code>.</td></tr>
+      <tr><td>Polymorphism</td><td><code>displayInfo()</code> is virtual and overridden.</td></tr>
+      <tr><td>Constructors</td><td>Default, parameterized, and overloaded constructors are used.</td></tr>
+      <tr><td>Operator Overloading</td><td><code>+</code>, <code>&gt;</code>, and <code>&lt;</code> are overloaded in meaningful classes.</td></tr>
+      <tr><td>File Handling</td><td><code>FileManager</code> persists records to <code>.txt</code> files.</td></tr>
+    </table>
+    <h3>OOP Evidence Output</h3>
+    <img src="screenshots/04_oop_evidence.svg" alt="OOP Evidence" />
+
+    <h2>7. Functional Modules</h2>
+    <div class="grid">
+      <div class="card"><h3>Donor Management</h3><p>Add, update, delete, view donors, and track total donated amount.</p></div>
+      <div class="card"><h3>Campaign Management</h3><p>Create campaigns and monitor target, collection, allocation, balance, and progress.</p></div>
+      <div class="card"><h3>Beneficiary Management</h3><p>Register beneficiaries and link them to charity campaigns.</p></div>
+      <div class="card"><h3>Donation Recording</h3><p>Record donor contributions and update totals automatically.</p></div>
+      <div class="card"><h3>Fund Allocation</h3><p>Distribute funds while preventing over-allocation.</p></div>
+      <div class="card"><h3>Reports</h3><p>Generate monthly and campaign-level transparency reports.</p></div>
+    </div>
+
+    <h2>8. Data Management</h2>
+    <p>The system stores data in pipe-delimited text files:</p>
+    <table>
+      <tr><th>File</th><th>Purpose</th></tr>
+      <tr><td><code>donors.txt</code></td><td>Donor records</td></tr>
+      <tr><td><code>beneficiaries.txt</code></td><td>Beneficiary records</td></tr>
+      <tr><td><code>campaigns.txt</code></td><td>Campaign records</td></tr>
+      <tr><td><code>donations.txt</code></td><td>Donation transactions</td></tr>
+      <tr><td><code>allocations.txt</code></td><td>Fund allocation records</td></tr>
+      <tr><td><code>reports.txt</code></td><td>Generated reports</td></tr>
+    </table>
+
+    <h2>9. Input Validation</h2>
+    <p>Validation is implemented inside the C++ core. Invalid data is rejected even if the GUI is bypassed.</p>
+    <table>
+      <tr><th>Input</th><th>Rule</th></tr>
+      <tr><td>Name/title/description</td><td>Cannot be empty.</td></tr>
+      <tr><td>Age</td><td>Must be 1 to 120.</td></tr>
+      <tr><td>Contact</td><td>Must contain 7 to 15 digits with valid phone characters.</td></tr>
+      <tr><td>Email</td><td>Must match email pattern.</td></tr>
+      <tr><td>Amount</td><td>Must be greater than zero.</td></tr>
+      <tr><td>Date</td><td>Must be valid <code>YYYY-MM-DD</code>.</td></tr>
+      <tr><td>Allocation</td><td>Cannot exceed available campaign balance.</td></tr>
+    </table>
+    <h3>Validation Evidence</h3>
+    <img src="screenshots/03_validation_evidence.svg" alt="Input Validation Evidence" />
+
+    <h2>10. Program Output Screenshots</h2>
+    <h3>Dashboard Summary</h3>
+    <img src="screenshots/01_dashboard_summary.svg" alt="Dashboard Summary Output" />
+    <h3>Campaign Records</h3>
+    <img src="screenshots/02_campaigns_table.svg" alt="Campaign Records Output" />
+
+    <h2>11. Testing</h2>
+    <p>A Python test script runs the C++ executable in an isolated temporary data folder:</p>
+    <pre>python3 tests/run_core_tests.py</pre>
+    <p>It verifies invalid input rejection, demo seeding, summary totals, donation validation, over-allocation prevention, report generation, and OOP evidence output.</p>
+    <pre>All C++ core tests passed.</pre>
+
+    <h2>12. GUI and Deployment</h2>
+    <p>Run the GUI locally with:</p>
+    <pre>pip install -r requirements.txt
+streamlit run streamlit_app.py</pre>
+    <p>The app can be deployed on Streamlit Community Cloud using GitHub. The file <code>packages.txt</code> includes <code>build-essential</code> so that the C++ core can be compiled in the cloud.</p>
+    <div class="warning"><strong>Persistence note:</strong> Streamlit Cloud may reset local files after reboot or redeployment. Local execution is best for demonstrating persistent text-file storage. The GUI includes a Seed Demo Data button for cloud demonstrations.</div>
+
+    <h2>13. Conclusion</h2>
+    <p>The project implements a complete C++ OOP management system with a polished GUI wrapper. It includes meaningful classes, inheritance, polymorphism, constructors, operator overloading, file handling, CRUD operations, validation, reports, UML diagrams, output evidence, and automated tests.</p>
+  </main>
+</body>
+</html>
