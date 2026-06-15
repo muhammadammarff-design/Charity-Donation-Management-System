@@ -2,7 +2,7 @@
 
 ## 1. One-Minute Project Explanation
 
-This is a Charity and Donation Management System built in C++ using OOP. It helps a small charity track donors, campaigns, beneficiaries, donations, fund allocations, and reports. The main purpose is transparency: every donation received and every amount distributed is recorded. The GUI is made in Streamlit, but it only calls the C++ executable. All main logic is inside C++.
+This is a Charity and Donation Management System built in C++ using OOP. It helps a small charity track donors, campaigns, beneficiaries, donations, fund allocations, and reports. The main purpose is transparency: every donation received and every amount distributed is recorded. The GUI is made in Streamlit, but it only calls the C++ executable. All main logic is inside C++. The updated interface has an Admin Area and a read-only Donor Portal where donors can verify using donor ID and email to view their donation history.
 
 ---
 
@@ -113,9 +113,9 @@ Pure Streamlit would mean Python is the main project, but our OOP viva is from C
 
 Vercel is better for frontend/serverless apps, not for a C++ file-handling project.
 
-### Why no full login system?
+### Why simple admin login and donor verification?
 
-Login is not required by the rubric. Adding it would add complexity but not improve the main OOP marks much.
+The hosted app is public, so admin features should not be mixed with donor viewing. A simple Streamlit-level admin login separates CRUD pages from the read-only donor portal. Donor verification uses Donor ID + email and the verification command is handled by the C++ executable.
 
 ### Why text files instead of database?
 

@@ -1,0 +1,2 @@
+id|title|description|targetAmount|collectedAmount|allocatedAmount|availableBalance|progressPercent|startDate|endDate|status
+CAM001|Flood Relief 2026|Emergency food, shelter, and medicines for flood affected families.|500000.00|200000.00|60000.00|140000.00|40.00|2026-06-01|2026-07-31|Active

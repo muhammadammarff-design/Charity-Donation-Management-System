@@ -1,2 +1,2 @@
-RPT001|Monthly|2026-06|345000.00|125000.00|220000.00|2026-06-14|Generated monthly transparency report.
-RPT002|Campaign|CAM001 - Flood Relief 2026|200000.00|60000.00|140000.00|2026-06-14|Generated campaign-level transparency report.
+RPT001|Monthly|2026-06|345000.00|125000.00|220000.00|2026-06-15|Generated monthly transparency report.
+RPT002|Campaign|CAM001 - Flood Relief 2026|200000.00|60000.00|140000.00|2026-06-15|Generated campaign-level transparency report.

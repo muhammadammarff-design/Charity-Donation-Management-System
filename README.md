@@ -84,6 +84,20 @@ This keeps the viva focused on C++ OOP while still giving the project a polished
 - Stored in `reports.txt`
 - Operator overloading demonstration with report merging
 
+### Donor Transparency Portal
+
+- Donor can verify using Donor ID + email
+- Donor can view personal donation history
+- Donor can view supported campaign progress
+- Donor can see campaign-level fund allocation transparency
+- Read-only donor interface prevents accidental data modification
+
+### Admin Access
+
+- Streamlit-level demo login protects admin CRUD pages
+- Default demo credentials: `admin` / `admin123`
+- Main C++ OOP logic remains separate from this GUI-level access control
+
 ### Validation Evidence
 
 The C++ core rejects invalid data such as:
@@ -226,6 +240,16 @@ Example record donation:
 ./build/charity_app record-donation DNR001 CAM001 5000 2026-06-14 Cash "Food support"
 ```
 
+Example donor portal commands:
+
+```bash
+./build/charity_app verify-donor DNR001 ahmed.khan@example.com
+./build/charity_app donor-statement DNR001 ahmed.khan@example.com
+./build/charity_app donor-donations DNR001 ahmed.khan@example.com
+./build/charity_app donor-campaigns DNR001 ahmed.khan@example.com
+./build/charity_app donor-allocations DNR001 ahmed.khan@example.com
+```
+
 Example validation demo:
 
 ```bash
@@ -283,14 +307,17 @@ For final marking, submit:
 
 ---
 
-## 10. Why No Full Login System?
+## 10. Why Simple GUI-Level Login?
 
-A full login/authentication module is not required by the rubric. Adding it would increase complexity without improving core OOP marks much.
+The updated app includes a simple **Streamlit-level admin login** and a **donor verification portal**. This is enough for the project demonstration because the rubric focuses mainly on C++ OOP, CRUD, validation, file handling, GUI, UML, reports, and viva understanding.
 
-Instead, this project focuses on:
+The login is not presented as production-grade banking security. It is a demo access-control layer so public visitors use the read-only donor portal while admin pages remain separated.
+
+The project still focuses on:
 
 - strong C++ OOP
 - CRUD features
+- donor transparency portal
 - validation
 - file handling
 - GUI

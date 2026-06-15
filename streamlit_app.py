@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import html
 import os
 import platform
 import subprocess
@@ -20,64 +21,231 @@ EXE = BUILD_DIR / ("charity_app.exe" if platform.system() == "Windows" else "cha
 DATA_DIR = ROOT / "data"
 
 st.set_page_config(
-    page_title="Charity & Donation Management System",
-    page_icon="🤝",
+    page_title="Charity Donation System",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
+# Calm, accessible theme. No harsh gradients, no dark glare.
 st.markdown(
     """
     <style>
-        .main-header {
-            background: linear-gradient(135deg, #0f766e 0%, #115e59 45%, #134e4a 100%);
-            color: white;
-            padding: 1.3rem 1.5rem;
-            border-radius: 18px;
-            margin-bottom: 1.2rem;
-            box-shadow: 0 10px 30px rgba(15, 118, 110, 0.25);
+        :root {
+            --bg: #f7faf8;
+            --surface: #ffffff;
+            --surface-soft: #f0f7f3;
+            --text: #1f2933;
+            --muted: #64748b;
+            --primary: #2f7d64;
+            --primary-dark: #225c4a;
+            --border: #dbe7e1;
+            --success: #247857;
+            --warning: #b7791f;
+            --danger: #b42318;
+            --shadow: 0 12px 28px rgba(31, 41, 51, 0.07);
+            --radius: 18px;
         }
-        .main-header h1 { margin: 0; font-size: 2rem; }
-        .main-header p { margin: .35rem 0 0 0; opacity: .92; }
-        .info-card {
-            border: 1px solid #e5e7eb;
-            padding: 1rem;
-            border-radius: 14px;
+
+        .stApp {
+            background: linear-gradient(180deg, #f7faf8 0%, #ffffff 52%, #f8fafc 100%);
+            color: var(--text);
+        }
+
+        [data-testid="block-container"] {
+            padding-top: 1.4rem;
+            padding-bottom: 3rem;
+            max-width: 1180px;
+        }
+
+        [data-testid="stSidebar"] {
             background: #ffffff;
-            box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+            border-right: 1px solid var(--border);
         }
-        .success-box {
-            border-left: 5px solid #16a34a;
-            background: #f0fdf4;
-            padding: .75rem 1rem;
-            border-radius: 8px;
-            margin: .5rem 0;
+
+        h1, h2, h3 {
+            color: var(--text);
+            letter-spacing: -0.02em;
         }
-        .error-box {
-            border-left: 5px solid #dc2626;
-            background: #fef2f2;
-            padding: .75rem 1rem;
-            border-radius: 8px;
-            margin: .5rem 0;
+
+        .soft-hero {
+            background: rgba(255,255,255,0.92);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 1.35rem 1.55rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+            animation: fadeUp .45s ease-out both;
         }
-        .small-note { color: #64748b; font-size: .92rem; }
-        div[data-testid="stMetricValue"] { font-size: 1.65rem; }
+
+        .soft-hero .eyebrow {
+            color: var(--primary);
+            font-size: .78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: .25rem;
+        }
+
+        .soft-hero h1 {
+            margin: 0;
+            font-size: clamp(1.55rem, 2.5vw, 2.35rem);
+            line-height: 1.15;
+        }
+
+        .soft-hero p {
+            color: var(--muted);
+            margin: .45rem 0 0;
+            font-size: 1rem;
+            max-width: 850px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: .85rem;
+            margin: .8rem 0 1rem;
+        }
+
+        @media (max-width: 920px) {
+            .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 560px) {
+            .card-grid { grid-template-columns: 1fr; }
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem 1.05rem;
+            box-shadow: 0 8px 22px rgba(31,41,51,.055);
+            animation: fadeUp .55s ease-out both;
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+            min-height: 110px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 32px rgba(31,41,51,.09);
+            border-color: #b8d8c8;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: .84rem;
+            margin-bottom: .35rem;
+        }
+
+        .stat-value {
+            color: var(--text);
+            font-size: 1.65rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .stat-help {
+            color: var(--primary-dark);
+            font-size: .82rem;
+            margin-top: .45rem;
+        }
+
+        .section-card {
+            background: rgba(255,255,255,.96);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1rem 1.05rem;
+            box-shadow: 0 8px 22px rgba(31,41,51,.045);
+            margin-bottom: .95rem;
+            animation: fadeUp .5s ease-out both;
+        }
+
+        .mini-title {
+            color: var(--text);
+            font-weight: 800;
+            font-size: 1.04rem;
+            margin-bottom: .35rem;
+        }
+
+        .muted { color: var(--muted); }
+
+        .pill {
+            display: inline-block;
+            padding: .25rem .55rem;
+            border-radius: 999px;
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            color: var(--primary-dark);
+            font-size: .78rem;
+            font-weight: 700;
+        }
+
+        .stButton>button, .stDownloadButton>button {
+            border-radius: 12px !important;
+            min-height: 42px;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+        .stButton>button:hover, .stDownloadButton>button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(47,125,100,.14);
+        }
+
+        input, textarea, select {
+            border-radius: 10px !important;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; }
+        }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 
-def header(title: str, subtitle: str) -> None:
+def safe(value: object) -> str:
+    return html.escape(str(value))
+
+
+def soft_header(title: str, subtitle: str, eyebrow: str = "Charity Transparency") -> None:
     st.markdown(
         f"""
-        <div class="main-header">
-            <h1>{title}</h1>
-            <p>{subtitle}</p>
+        <div class="soft-hero">
+            <div class="eyebrow">{safe(eyebrow)}</div>
+            <h1>{safe(title)}</h1>
+            <p>{safe(subtitle)}</p>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+
+def stat_card(label: str, value: object, help_text: str = "") -> None:
+    st.markdown(
+        f"""
+        <div class="stat-card">
+            <div class="stat-label">{safe(label)}</div>
+            <div class="stat-value">{safe(value)}</div>
+            <div class="stat-help">{safe(help_text)}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def section_start(title: str, note: str = "") -> None:
+    st.markdown('<div class="section-card">', unsafe_allow_html=True)
+    st.markdown(f"<div class='mini-title'>{safe(title)}</div>", unsafe_allow_html=True)
+    if note:
+        st.markdown(f"<div class='muted'>{safe(note)}</div>", unsafe_allow_html=True)
+
+
+def section_end() -> None:
+    st.markdown("</div>", unsafe_allow_html=True)
 
 
 @st.cache_resource(show_spinner=False)
@@ -85,7 +253,7 @@ def compile_core() -> Tuple[bool, str]:
     BUILD_DIR.mkdir(exist_ok=True)
     sources = sorted(str(p) for p in SRC_DIR.glob("*.cpp"))
     if not sources:
-        return False, "No C++ source files found."
+        return False, "No C++ source files found. Make sure cpp_core/src exists at repository root."
 
     command = [
         "g++",
@@ -101,7 +269,7 @@ def compile_core() -> Tuple[bool, str]:
     try:
         completed = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
     except FileNotFoundError:
-        return False, "g++ compiler not found. Install MinGW/GCC locally or build-essential on Linux."
+        return False, "g++ compiler not found. On Streamlit Cloud, packages.txt must contain build-essential."
 
     if completed.returncode != 0:
         return False, completed.stderr or completed.stdout
@@ -126,34 +294,27 @@ def run_core(args: Iterable[str]) -> Tuple[bool, str]:
 def parse_pipe_table(output: str) -> pd.DataFrame:
     if not output or output.startswith("ERROR|") or output.startswith("SUCCESS|"):
         return pd.DataFrame()
-
     reader = csv.reader(StringIO(output), delimiter="|")
     rows = list(reader)
     if not rows:
         return pd.DataFrame()
-    header_row = rows[0]
-    data_rows = rows[1:]
-    return pd.DataFrame(data_rows, columns=header_row)
+    return pd.DataFrame(rows[1:], columns=rows[0])
 
 
 def parse_result(output: str) -> Tuple[bool, str, str]:
     if output.startswith("SUCCESS|"):
         parts = output.split("|", 2)
-        message = parts[1] if len(parts) > 1 else "Operation successful."
-        item_id = parts[2] if len(parts) > 2 else ""
-        return True, message, item_id
+        return True, parts[1] if len(parts) > 1 else "Operation successful.", parts[2] if len(parts) > 2 else ""
     if output.startswith("ERROR|"):
         parts = output.split("|", 1)
-        message = parts[1] if len(parts) > 1 else "Operation failed."
-        return False, message, ""
+        return False, parts[1] if len(parts) > 1 else "Operation failed.", ""
     return True, output, ""
 
 
 def show_result(output: str) -> None:
     success, message, item_id = parse_result(output)
     if success:
-        extra = f" New ID: **{item_id}**" if item_id else ""
-        st.success(f"{message}{extra}")
+        st.success(f"{message}" + (f" New ID: {item_id}" if item_id else ""))
     else:
         st.error(message)
 
@@ -166,13 +327,18 @@ def get_table(name: str) -> pd.DataFrame:
     return parse_pipe_table(output)
 
 
+def command_table(args: List[str]) -> Tuple[bool, pd.DataFrame, str]:
+    ok, output = run_core(args)
+    if not ok or output.startswith("ERROR|"):
+        return False, pd.DataFrame(), output
+    return True, parse_pipe_table(output), output
+
+
 def get_summary() -> dict:
-    ok, output = run_core(["summary"])
-    if not ok:
-        st.error(output)
-        return {}
-    df = parse_pipe_table(output)
-    if df.empty:
+    ok, df, output = command_table(["summary"])
+    if not ok or df.empty:
+        if output:
+            st.error(output)
         return {}
     return {row["metric"]: row["value"] for _, row in df.iterrows()}
 
@@ -201,83 +367,189 @@ def refresh() -> None:
     st.rerun()
 
 
-# Compile once and show status in sidebar.
-compile_ok, compile_status = compile_core()
-with st.sidebar:
-    st.title("🤝 Charity System")
-    st.caption("Streamlit GUI + C++ OOP Core")
-    if compile_ok:
-        st.success("C++ core ready")
-    else:
-        st.error("C++ build failed")
-        st.code(compile_status)
+def get_secret(name: str, default: str) -> str:
+    value = os.environ.get(name)
+    if value:
+        return value
+    try:
+        return str(st.secrets.get(name, default))
+    except Exception:
+        return default
 
-    page = st.radio(
-        "Navigation",
-        [
-            "Dashboard",
-            "Donors",
-            "Campaigns",
-            "Beneficiaries",
-            "Donations",
-            "Fund Allocation",
-            "Reports",
-            "Validation Evidence",
-            "OOP Evidence",
-            "System Tools",
-        ],
-    )
-    st.divider()
-    st.caption("Team: Ali Raza, Muhammad Ammar, Taha Ali")
 
-if not compile_ok:
-    st.stop()
+def ensure_demo_data_if_empty() -> None:
+    donors = get_table("donors")
+    if donors.empty:
+        st.info("No demo records are loaded yet. Click below to load sample data for testing.")
+        if st.button("Load demo data", type="primary", key="load_demo_empty"):
+            ok, output = run_core(["seed"])
+            show_result(output)
+            if ok:
+                refresh()
 
-if page == "Dashboard":
-    header("Charity & Donation Management System", "Transparent donor, campaign, beneficiary, donation, and fund allocation tracking.")
-    summary = get_summary()
 
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Donors", summary.get("donors", "0"))
-    col2.metric("Campaigns", summary.get("campaigns", "0"))
-    col3.metric("Donations", summary.get("donations", "0"))
-    col4.metric("Allocations", summary.get("allocations", "0"))
+def login_admin() -> bool:
+    if st.session_state.get("admin_logged_in"):
+        return True
 
-    col5, col6, col7 = st.columns(3)
-    col5.metric("Total Donations", f"Rs. {summary.get('totalDonations', '0.00')}")
-    col6.metric("Total Allocated", f"Rs. {summary.get('totalAllocations', '0.00')}")
-    col7.metric("Remaining Balance", f"Rs. {summary.get('remainingBalance', '0.00')}")
+    soft_header("Admin Login", "Admin area is protected so public visitors cannot accidentally change demo records.", "Access Control")
+    st.info("Demo credentials: username `admin`, password `admin123`. You can change them later using Streamlit secrets.")
+    with st.form("admin_login_form"):
+        username = st.text_input("Username", value="admin")
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Login", type="primary")
 
-    campaigns = numeric_columns(get_table("campaigns"), ["targetAmount", "collectedAmount", "allocatedAmount", "availableBalance", "progressPercent"])
-    donations = numeric_columns(get_table("donations"), ["amount"])
-
-    left, right = st.columns([1.15, 1])
-    with left:
-        st.subheader("Campaign Progress")
-        if campaigns.empty:
-            st.info("No campaigns found. Use System Tools → Seed Demo Data or add a campaign.")
+    if submitted:
+        expected_user = get_secret("ADMIN_USERNAME", "admin")
+        expected_password = get_secret("ADMIN_PASSWORD", "admin123")
+        if username == expected_user and password == expected_password:
+            st.session_state["admin_logged_in"] = True
+            st.success("Logged in successfully.")
+            refresh()
         else:
-            chart_df = campaigns[["title", "collectedAmount", "targetAmount"]].set_index("title")
-            st.bar_chart(chart_df)
-            st.dataframe(campaigns, use_container_width=True, hide_index=True)
+            st.error("Invalid admin username or password.")
+    return False
+
+
+def donor_portal_page() -> None:
+    soft_header(
+        "Donor Transparency Portal",
+        "A donor can verify using donor ID and email, then view their donations and how supported campaigns are using funds.",
+        "Read-only donor view",
+    )
+    ensure_demo_data_if_empty()
+
+    with st.expander("Sample donor for hosted demo", expanded=True):
+        st.write("Donor ID: `DNR001`  |  Email: `ahmed.khan@example.com`")
+
+    with st.form("donor_verify_form"):
+        col1, col2 = st.columns(2)
+        donor_id = col1.text_input("Donor ID", value=st.session_state.get("donor_id", "DNR001"))
+        email = col2.text_input("Email", value=st.session_state.get("donor_email", "ahmed.khan@example.com"))
+        submitted = st.form_submit_button("View my donations", type="primary")
+
+    if submitted:
+        ok, output = run_core(["verify-donor", donor_id, email])
+        if ok and output.startswith("SUCCESS|"):
+            st.session_state["donor_verified"] = True
+            st.session_state["donor_id"] = donor_id.strip()
+            st.session_state["donor_email"] = email.strip()
+            st.success("Donor verified. Your transparency statement is shown below.")
+        else:
+            st.session_state["donor_verified"] = False
+            show_result(output)
+
+    if not st.session_state.get("donor_verified"):
+        st.markdown("<span class='pill'>Read-only</span> <span class='pill'>Donation history</span> <span class='pill'>Campaign transparency</span>", unsafe_allow_html=True)
+        return
+
+    donor_id = st.session_state["donor_id"]
+    email = st.session_state["donor_email"]
+
+    ok, statement_df, statement_output = command_table(["donor-statement", donor_id, email])
+    if not ok or statement_df.empty:
+        show_result(statement_output)
+        return
+    statement = {row["metric"]: row["value"] for _, row in statement_df.iterrows()}
+
+    st.markdown('<div class="card-grid">', unsafe_allow_html=True)
+    stat_card("Donor", statement.get("donorName", "-"), statement.get("donorId", ""))
+    stat_card("Total Donated", f"Rs. {statement.get('totalDonated', '0.00')}", "Recorded in C++ files")
+    stat_card("Donations", statement.get("donationCount", "0"), "Number of donation records")
+    stat_card("Campaigns Supported", statement.get("campaignsSupported", "0"), "Causes linked to this donor")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    donations_ok, donations, donations_output = command_table(["donor-donations", donor_id, email])
+    campaigns_ok, campaigns, campaigns_output = command_table(["donor-campaigns", donor_id, email])
+    allocations_ok, allocations, allocations_output = command_table(["donor-allocations", donor_id, email])
+
+    donations = numeric_columns(donations, ["amount"])
+    campaigns = numeric_columns(campaigns, ["targetAmount", "collectedAmount", "allocatedAmount", "availableBalance", "progressPercent"])
+    allocations = numeric_columns(allocations, ["amount"])
+
+    left, right = st.columns([1.05, 1])
+    with left:
+        section_start("My Donation History", "Only donations matching your verified donor ID are displayed.")
+        if donations_ok and not donations.empty:
+            st.dataframe(donations, use_container_width=True, hide_index=True)
+            st.bar_chart(donations.set_index("date")["amount"])
+        else:
+            st.info("No donations found for this donor.")
+        section_end()
 
     with right:
-        st.subheader("Recent Donations")
-        if donations.empty:
-            st.info("No donations recorded yet.")
+        section_start("Supported Campaigns", "Collected, allocated, and available balances for campaigns you supported.")
+        if campaigns_ok and not campaigns.empty:
+            for _, row in campaigns.iterrows():
+                progress = min(float(row.get("progressPercent", 0)) / 100.0, 1.0)
+                st.write(f"**{row['title']}** — Rs. {row['collectedAmount']:.2f} collected of Rs. {row['targetAmount']:.2f}")
+                st.progress(progress, text=f"{row['progressPercent']:.2f}% funded")
+                st.caption(f"Allocated: Rs. {row['allocatedAmount']:.2f} | Available: Rs. {row['availableBalance']:.2f}")
         else:
-            st.dataframe(donations.tail(8), use_container_width=True, hide_index=True)
-            by_campaign = donations.groupby("campaignId", as_index=False)["amount"].sum()
-            st.caption("Donation totals by campaign")
-            st.bar_chart(by_campaign.set_index("campaignId"))
+            st.info(campaigns_output or "No supported campaign data found.")
+        section_end()
 
-elif page == "Donors":
-    header("Donor Management", "Add, view, update, and protect donor donation history.")
+    section_start("Where supported campaign funds were allocated", "This is campaign-level transparency, not a private beneficiary login.")
+    if allocations_ok and not allocations.empty:
+        st.dataframe(allocations, use_container_width=True, hide_index=True)
+    else:
+        st.info(allocations_output or "No allocation records found for supported campaigns.")
+    section_end()
+
+
+def admin_dashboard_page() -> None:
+    soft_header(
+        "Admin Dashboard",
+        "Simple overview of donations received, funds allocated, and remaining balance. Use the side menu for detailed management.",
+        "Admin overview",
+    )
+    summary = get_summary()
+    campaigns = numeric_columns(get_table("campaigns"), ["targetAmount", "collectedAmount", "allocatedAmount", "availableBalance", "progressPercent"])
+    donations = numeric_columns(get_table("donations"), ["amount"])
+    donors = numeric_columns(get_table("donors"), ["totalDonated"])
+
+    st.markdown('<div class="card-grid">', unsafe_allow_html=True)
+    stat_card("Total Donations", f"Rs. {summary.get('totalDonations', '0.00')}", f"{summary.get('donations', '0')} donation records")
+    stat_card("Allocated Funds", f"Rs. {summary.get('totalAllocations', '0.00')}", f"{summary.get('allocations', '0')} aid allocations")
+    stat_card("Remaining Balance", f"Rs. {summary.get('remainingBalance', '0.00')}", "Available for future aid")
+    stat_card("Active Records", f"{summary.get('donors', '0')} donors", f"{summary.get('campaigns', '0')} campaigns")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    left, right = st.columns([1.05, 1])
+    with left:
+        section_start("Campaign funding status", "Calm progress bars instead of a crowded chart.")
+        if campaigns.empty:
+            st.info("No campaigns found. Use System Tools to seed demo data or add a campaign.")
+        else:
+            for _, row in campaigns.sort_values("progressPercent", ascending=False).iterrows():
+                progress = min(float(row["progressPercent"]) / 100.0, 1.0)
+                st.write(f"**{row['title']}**")
+                st.progress(progress, text=f"{row['progressPercent']:.2f}% funded")
+                st.caption(f"Collected Rs. {row['collectedAmount']:.2f} | Allocated Rs. {row['allocatedAmount']:.2f} | Available Rs. {row['availableBalance']:.2f}")
+        section_end()
+
+    with right:
+        section_start("Quick insight", "Fast facts for viva/demo.")
+        if not donors.empty:
+            top_donor = donors.sort_values("totalDonated", ascending=False).iloc[0]
+            st.write(f"**Top donor:** {top_donor['name']} — Rs. {top_donor['totalDonated']:.2f}")
+        if not campaigns.empty:
+            lowest = campaigns.sort_values("progressPercent", ascending=True).iloc[0]
+            st.write(f"**Needs attention:** {lowest['title']} — {lowest['progressPercent']:.2f}% funded")
+        if not donations.empty:
+            st.write("**Recent donations**")
+            st.dataframe(donations.tail(5), use_container_width=True, hide_index=True)
+        st.caption("Dashboard intentionally stays simple: key numbers, campaign progress, recent activity.")
+        section_end()
+
+
+def donor_management_page() -> None:
+    soft_header("Donor Management", "Add, update, delete, and view donors. Donation history prevents unsafe deletion.", "Admin")
     donors = get_table("donors")
 
     add_col, edit_col = st.columns([1, 1])
     with add_col:
-        st.subheader("Add New Donor")
+        section_start("Add donor")
         with st.form("add_donor_form", clear_on_submit=True):
             name = st.text_input("Full Name")
             age = st.number_input("Age / Organization Years", min_value=1, max_value=120, value=25)
@@ -291,9 +563,10 @@ elif page == "Donors":
             show_result(output)
             if ok and output.startswith("SUCCESS|"):
                 refresh()
+        section_end()
 
     with edit_col:
-        st.subheader("Update / Delete Donor")
+        section_start("Update or delete donor")
         options = id_options(donors, "name")
         if not options:
             st.info("No donor records available.")
@@ -314,22 +587,25 @@ elif page == "Donors":
                 show_result(output)
                 if ok and output.startswith("SUCCESS|"):
                     refresh()
-            if st.button("Delete Selected Donor", type="secondary"):
+            if st.button("Delete Selected Donor", key="delete_donor"):
                 ok, output = run_core(["delete-donor", donor_id])
                 show_result(output)
                 if ok and output.startswith("SUCCESS|"):
                     refresh()
+        section_end()
 
-    st.subheader("Donor Records")
+    section_start("Donor records")
     st.dataframe(donors, use_container_width=True, hide_index=True)
+    section_end()
 
-elif page == "Campaigns":
-    header("Campaign Management", "Create charity campaigns and track target vs collected funds.")
+
+def campaign_management_page() -> None:
+    soft_header("Campaign Management", "Create and manage campaigns with target, collection, allocation, and progress tracking.", "Admin")
     campaigns = numeric_columns(get_table("campaigns"), ["targetAmount", "collectedAmount", "allocatedAmount", "availableBalance", "progressPercent"])
 
     add_col, edit_col = st.columns([1, 1])
     with add_col:
-        st.subheader("Add New Campaign")
+        section_start("Add campaign")
         with st.form("add_campaign_form", clear_on_submit=True):
             title = st.text_input("Campaign Title")
             description = st.text_area("Description")
@@ -343,9 +619,10 @@ elif page == "Campaigns":
             show_result(output)
             if ok and output.startswith("SUCCESS|"):
                 refresh()
+        section_end()
 
     with edit_col:
-        st.subheader("Update / Delete Campaign")
+        section_start("Update or delete campaign")
         options = id_options(campaigns, "title")
         if not options:
             st.info("No campaigns available.")
@@ -366,28 +643,30 @@ elif page == "Campaigns":
                 show_result(output)
                 if ok and output.startswith("SUCCESS|"):
                     refresh()
-            if st.button("Delete Selected Campaign"):
+            if st.button("Delete Selected Campaign", key="delete_campaign"):
                 ok, output = run_core(["delete-campaign", campaign_id])
                 show_result(output)
                 if ok and output.startswith("SUCCESS|"):
                     refresh()
+        section_end()
 
-    st.subheader("Campaign Records")
-    if not campaigns.empty:
-        st.dataframe(campaigns, use_container_width=True, hide_index=True)
-        st.progress(min(float(campaigns["progressPercent"].mean()) / 100.0, 1.0), text="Average campaign funding progress")
-    else:
+    section_start("Campaign records")
+    if campaigns.empty:
         st.info("No campaign records found.")
+    else:
+        st.dataframe(campaigns, use_container_width=True, hide_index=True)
+    section_end()
 
-elif page == "Beneficiaries":
-    header("Beneficiary Management", "Register beneficiaries and link each person/family to a campaign.")
+
+def beneficiary_management_page() -> None:
+    soft_header("Beneficiary Management", "Register beneficiaries and link each one to a specific campaign.", "Admin")
     beneficiaries = get_table("beneficiaries")
     campaigns = get_table("campaigns")
     campaign_options = id_options(campaigns, "title")
 
     add_col, edit_col = st.columns([1, 1])
     with add_col:
-        st.subheader("Add New Beneficiary")
+        section_start("Add beneficiary")
         with st.form("add_beneficiary_form", clear_on_submit=True):
             name = st.text_input("Name / Family Name")
             age = st.number_input("Age", min_value=1, max_value=120, value=30)
@@ -405,9 +684,10 @@ elif page == "Beneficiaries":
                 show_result(output)
                 if ok and output.startswith("SUCCESS|"):
                     refresh()
+        section_end()
 
     with edit_col:
-        st.subheader("Update / Delete Beneficiary")
+        section_start("Update or delete beneficiary")
         options = id_options(beneficiaries, "name")
         if not options:
             st.info("No beneficiary records available.")
@@ -430,24 +710,27 @@ elif page == "Beneficiaries":
                 show_result(output)
                 if ok and output.startswith("SUCCESS|"):
                     refresh()
-            if st.button("Delete Selected Beneficiary"):
+            if st.button("Delete Selected Beneficiary", key="delete_beneficiary"):
                 ok, output = run_core(["delete-beneficiary", beneficiary_id])
                 show_result(output)
                 if ok and output.startswith("SUCCESS|"):
                     refresh()
+        section_end()
 
-    st.subheader("Beneficiary Records")
+    section_start("Beneficiary records")
     st.dataframe(beneficiaries, use_container_width=True, hide_index=True)
+    section_end()
 
-elif page == "Donations":
-    header("Donation Recording", "Log each donation with donor, campaign, amount, date, payment method, and notes.")
+
+def donations_page() -> None:
+    soft_header("Donation Recording", "Record donations and automatically update donor/campaign totals.", "Admin")
     donors = get_table("donors")
     campaigns = get_table("campaigns")
     donations = numeric_columns(get_table("donations"), ["amount"])
-
     donor_options = id_options(donors, "name")
     campaign_options = id_options(campaigns, "title")
 
+    section_start("Record new donation")
     with st.form("record_donation_form", clear_on_submit=True):
         col1, col2 = st.columns(2)
         donor_option = col1.selectbox("Donor", donor_options) if donor_options else ""
@@ -465,21 +748,22 @@ elif page == "Donations":
             show_result(output)
             if ok and output.startswith("SUCCESS|"):
                 refresh()
+    section_end()
 
-    st.subheader("Donation Records")
+    section_start("Donation records")
     st.dataframe(donations, use_container_width=True, hide_index=True)
-    if not donations.empty:
-        st.bar_chart(donations.groupby("date", as_index=True)["amount"].sum())
+    section_end()
 
-elif page == "Fund Allocation":
-    header("Fund Allocation", "Distribute collected funds to linked beneficiaries without exceeding campaign balance.")
+
+def fund_allocation_page() -> None:
+    soft_header("Fund Allocation", "Distribute funds to beneficiaries without exceeding campaign balance.", "Admin")
     beneficiaries = get_table("beneficiaries")
-    campaigns = numeric_columns(get_table("campaigns"), ["availableBalance"])
+    campaigns = numeric_columns(get_table("campaigns"), ["availableBalance", "collectedAmount", "allocatedAmount"])
     allocations = numeric_columns(get_table("allocations"), ["amount"])
-
     beneficiary_options = id_options(beneficiaries, "name")
     campaign_options = id_options(campaigns, "title")
 
+    section_start("Allocate funds")
     with st.form("allocation_form", clear_on_submit=True):
         col1, col2 = st.columns(2)
         beneficiary_option = col1.selectbox("Beneficiary", beneficiary_options) if beneficiary_options else ""
@@ -497,34 +781,39 @@ elif page == "Fund Allocation":
             show_result(output)
             if ok and output.startswith("SUCCESS|"):
                 refresh()
+    section_end()
 
-    col_a, col_b = st.columns([1, 1])
-    with col_a:
-        st.subheader("Available Campaign Balances")
-        if campaigns.empty:
-            st.info("No campaigns found.")
-        else:
+    left, right = st.columns([1, 1])
+    with left:
+        section_start("Available campaign balances")
+        if not campaigns.empty:
             st.dataframe(campaigns[["id", "title", "collectedAmount", "allocatedAmount", "availableBalance"]], use_container_width=True, hide_index=True)
-    with col_b:
-        st.subheader("Allocation Records")
+        else:
+            st.info("No campaigns found.")
+        section_end()
+    with right:
+        section_start("Allocation records")
         st.dataframe(allocations, use_container_width=True, hide_index=True)
+        section_end()
 
-elif page == "Reports":
-    header("Reports", "Generate monthly or campaign-level transparency reports.")
+
+def reports_page() -> None:
+    soft_header("Reports", "Generate monthly and campaign-level transparency reports.", "Admin")
     campaigns = get_table("campaigns")
     campaign_options = id_options(campaigns, "title")
 
     col1, col2 = st.columns(2)
     with col1:
-        st.subheader("Monthly Report")
+        section_start("Monthly report")
         month = st.text_input("Month (YYYY-MM)", value="2026-06")
         if st.button("Generate Monthly Report", type="primary"):
             ok, output = run_core(["generate-report", "monthly", month])
             show_result(output)
             if ok and output.startswith("SUCCESS|"):
                 refresh()
+        section_end()
     with col2:
-        st.subheader("Campaign Report")
+        section_start("Campaign report")
         if campaign_options:
             campaign_option = st.selectbox("Campaign", campaign_options)
             if st.button("Generate Campaign Report"):
@@ -534,33 +823,30 @@ elif page == "Reports":
                     refresh()
         else:
             st.info("Add campaign data first.")
+        section_end()
 
     reports = numeric_columns(get_table("reports"), ["totalDonations", "totalAllocations", "remainingBalance"])
-    st.subheader("Generated Reports")
+    section_start("Generated reports")
     st.dataframe(reports, use_container_width=True, hide_index=True)
-    if not reports.empty:
-        st.bar_chart(reports.set_index("id")[["totalDonations", "totalAllocations", "remainingBalance"]])
+    section_end()
 
-elif page == "Validation Evidence":
-    header("Input Validation Evidence", "C++ core rejects invalid data even if GUI validation is bypassed.")
-    st.markdown(
-        """
-        The table below is produced by the **C++ executable**, not by Streamlit. This is important for the rubric because validation is implemented inside the OOP core.
-        """
-    )
+
+def validation_page() -> None:
+    soft_header("Input Validation Evidence", "These test cases are produced by the C++ executable, not only by Streamlit.", "Rubric evidence")
     ok, output = run_core(["validation-demo"])
+    section_start("Validation test cases")
     if not ok:
         st.error(output)
     else:
         df = parse_pipe_table(output)
         st.dataframe(df, use_container_width=True, hide_index=True)
-        st.download_button("Download validation evidence as CSV", output, file_name="validation_evidence.txt")
+        st.download_button("Download validation evidence", output, file_name="validation_evidence.txt")
+    section_end()
 
-    st.subheader("Manual Validation Test")
-    st.caption("Try recording a negative donation against the first available donor/campaign.")
+    section_start("Manual negative donation test")
     donors = get_table("donors")
     campaigns = get_table("campaigns")
-    if st.button("Run Negative Donation Test"):
+    if st.button("Run negative donation test"):
         if donors.empty or campaigns.empty:
             st.error("Seed demo data first.")
         else:
@@ -568,28 +854,27 @@ elif page == "Validation Evidence":
             campaign_id = campaigns.iloc[0]["id"]
             ok, output = run_core(["record-donation", donor_id, campaign_id, -100, "2026-06-14", "Cash", "negative test"])
             show_result(output)
+    section_end()
 
-elif page == "OOP Evidence":
-    header("OOP Evidence", "Demonstration of inheritance, polymorphism, constructors, and operator overloading.")
+
+def oop_page() -> None:
+    soft_header("OOP Evidence", "Inheritance, polymorphism, constructors, operator overloading, and file handling remain in C++.", "Viva evidence")
     ok, output = run_core(["oop-demo"])
+    section_start("C++ OOP demo output")
     if not ok:
         st.error(output)
     else:
         df = parse_pipe_table(output)
         st.dataframe(df, use_container_width=True, hide_index=True)
         st.code(output, language="text")
+    section_end()
 
-    st.markdown(
-        """
-        **C++ classes used:** `Person`, `Donor`, `Beneficiary`, `Campaign`, `Donation`, `FundAllocation`, `Report`, `FileManager`, and `CharitySystem`.
-        """
-    )
 
-elif page == "System Tools":
-    header("System Tools", "Reset, seed, inspect build status, and prepare the project for demo.")
-    st.markdown(f"**Data directory:** `{DATA_DIR}`")
-    st.markdown(f"**Executable:** `{EXE}`")
-    st.info("No full login system is added because the rubric and viva focus on C++ OOP, CRUD, validation, file handling, UML, and GUI. Keeping auth out reduces unnecessary complexity.")
+def tools_page() -> None:
+    soft_header("System Tools", "Reset demo data, recompile the C++ core, and inspect CLI help.", "Admin")
+    st.info("Admin login is a Streamlit-level demo guard. The C++ OOP core still contains the main project logic.")
+    st.write(f"Data directory: `{DATA_DIR}`")
+    st.write(f"Executable: `{EXE}`")
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -608,11 +893,81 @@ elif page == "System Tools":
         if st.button("Recompile C++ Core"):
             compile_core.clear()
             ok, msg = compile_core()
-            if ok:
-                st.success(msg)
-            else:
-                st.error(msg)
+            st.success(msg) if ok else st.error(msg)
 
-    st.subheader("Command Help")
+    section_start("Command help")
     ok, help_output = run_core(["help"])
     st.code(help_output, language="text")
+    section_end()
+
+
+# Build status and navigation
+compile_ok, compile_status = compile_core()
+with st.sidebar:
+    st.markdown("### Charity System")
+    st.caption("C++ OOP core + Streamlit interface")
+    if compile_ok:
+        st.success("C++ core ready")
+    else:
+        st.error("C++ build failed")
+        st.code(compile_status)
+
+if not compile_ok:
+    st.stop()
+
+with st.sidebar:
+    access_mode = st.radio("Choose access", ["Donor Portal", "Admin Area"], index=0)
+    st.divider()
+
+if access_mode == "Donor Portal":
+    donor_portal_page()
+    st.stop()
+
+with st.sidebar:
+    if st.session_state.get("admin_logged_in"):
+        st.success("Admin logged in")
+        if st.button("Logout"):
+            st.session_state["admin_logged_in"] = False
+            refresh()
+    st.caption("Team: Ali Raza, Muhammad Ammar, Taha Ali")
+
+if not login_admin():
+    st.stop()
+
+with st.sidebar:
+    page = st.radio(
+        "Admin navigation",
+        [
+            "Dashboard",
+            "Donors",
+            "Campaigns",
+            "Beneficiaries",
+            "Donations",
+            "Fund Allocation",
+            "Reports",
+            "Validation Evidence",
+            "OOP Evidence",
+            "System Tools",
+        ],
+    )
+
+if page == "Dashboard":
+    admin_dashboard_page()
+elif page == "Donors":
+    donor_management_page()
+elif page == "Campaigns":
+    campaign_management_page()
+elif page == "Beneficiaries":
+    beneficiary_management_page()
+elif page == "Donations":
+    donations_page()
+elif page == "Fund Allocation":
+    fund_allocation_page()
+elif page == "Reports":
+    reports_page()
+elif page == "Validation Evidence":
+    validation_page()
+elif page == "OOP Evidence":
+    oop_page()
+elif page == "System Tools":
+    tools_page()

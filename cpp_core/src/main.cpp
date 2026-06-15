@@ -1,8 +1,11 @@
 #include "CharitySystem.h"
 #include "Validation.h"
 
+#include <algorithm>
+#include <cctype>
 #include <iostream>
 #include <limits>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -33,6 +36,11 @@ void printHelp() {
     cout << "  charity_app allocate-funds beneficiaryId campaignId amount date purpose approvedBy\n";
     cout << "  charity_app generate-report monthly YYYY-MM\n";
     cout << "  charity_app generate-report campaign CAM001\n";
+    cout << "  charity_app verify-donor donorId email\n";
+    cout << "  charity_app donor-statement donorId email\n";
+    cout << "  charity_app donor-donations donorId email\n";
+    cout << "  charity_app donor-campaigns donorId email\n";
+    cout << "  charity_app donor-allocations donorId email\n";
     cout << "  charity_app validation-demo          Run validation evidence cases\n";
     cout << "  charity_app oop-demo                 Show inheritance/polymorphism/operator overloading evidence\n";
 }
@@ -89,6 +97,108 @@ void listData(const CharitySystem& system, const string& type) {
         for (const Report& report : system.getReports()) cout << report.row() << "\n";
     } else {
         cout << "ERROR|Unknown list type.\n";
+    }
+}
+
+string toLowerCopy(string value) {
+    std::transform(value.begin(), value.end(), value.begin(), [](unsigned char ch) {
+        return static_cast<char>(std::tolower(ch));
+    });
+    return value;
+}
+
+const Donor* findVerifiedDonor(const CharitySystem& system, const string& donorId, const string& email) {
+    string cleanedEmail = toLowerCopy(Validation::trim(email));
+    for (const Donor& donor : system.getDonors()) {
+        if (donor.getId() == Validation::trim(donorId) &&
+            toLowerCopy(donor.getEmail()) == cleanedEmail) {
+            return &donor;
+        }
+    }
+    return nullptr;
+}
+
+std::set<string> campaignsSupportedByDonor(const CharitySystem& system, const string& donorId) {
+    std::set<string> campaignIds;
+    for (const Donation& donation : system.getDonations()) {
+        if (donation.getDonorId() == donorId) {
+            campaignIds.insert(donation.getCampaignId());
+        }
+    }
+    return campaignIds;
+}
+
+void printDonorStatement(const CharitySystem& system, const string& donorId, const string& email) {
+    const Donor* donor = findVerifiedDonor(system, donorId, email);
+    if (donor == nullptr) {
+        cout << "ERROR|Donor verification failed. Please check donor ID and email.\n";
+        return;
+    }
+
+    int donationCount = 0;
+    double total = 0.0;
+    for (const Donation& donation : system.getDonations()) {
+        if (donation.getDonorId() == donor->getId()) {
+            donationCount++;
+            total += donation.getAmount();
+        }
+    }
+
+    std::set<string> campaignIds = campaignsSupportedByDonor(system, donor->getId());
+    cout << "metric|value\n";
+    cout << "donorId|" << donor->getId() << "\n";
+    cout << "donorName|" << donor->getName() << "\n";
+    cout << "email|" << donor->getEmail() << "\n";
+    cout << "donorType|" << donor->getDonorType() << "\n";
+    cout << "totalDonated|" << Validation::toFixed2(total) << "\n";
+    cout << "donationCount|" << donationCount << "\n";
+    cout << "campaignsSupported|" << campaignIds.size() << "\n";
+}
+
+void printDonorDonations(const CharitySystem& system, const string& donorId, const string& email) {
+    const Donor* donor = findVerifiedDonor(system, donorId, email);
+    if (donor == nullptr) {
+        cout << "ERROR|Donor verification failed. Please check donor ID and email.\n";
+        return;
+    }
+
+    cout << Donation::header() << "\n";
+    for (const Donation& donation : system.getDonations()) {
+        if (donation.getDonorId() == donor->getId()) {
+            cout << donation.row() << "\n";
+        }
+    }
+}
+
+void printDonorCampaigns(const CharitySystem& system, const string& donorId, const string& email) {
+    const Donor* donor = findVerifiedDonor(system, donorId, email);
+    if (donor == nullptr) {
+        cout << "ERROR|Donor verification failed. Please check donor ID and email.\n";
+        return;
+    }
+
+    std::set<string> campaignIds = campaignsSupportedByDonor(system, donor->getId());
+    cout << Campaign::header() << "\n";
+    for (const Campaign& campaign : system.getCampaigns()) {
+        if (campaignIds.count(campaign.getId()) > 0) {
+            cout << campaign.row() << "\n";
+        }
+    }
+}
+
+void printDonorAllocations(const CharitySystem& system, const string& donorId, const string& email) {
+    const Donor* donor = findVerifiedDonor(system, donorId, email);
+    if (donor == nullptr) {
+        cout << "ERROR|Donor verification failed. Please check donor ID and email.\n";
+        return;
+    }
+
+    std::set<string> campaignIds = campaignsSupportedByDonor(system, donor->getId());
+    cout << FundAllocation::header() << "\n";
+    for (const FundAllocation& allocation : system.getAllocations()) {
+        if (campaignIds.count(allocation.getCampaignId()) > 0) {
+            cout << allocation.row() << "\n";
+        }
     }
 }
 
@@ -390,6 +500,26 @@ int main(int argc, char* argv[]) {
             cout << "ERROR|Unknown report type. Use monthly or campaign.\n";
             return 1;
         }
+    } else if (command == "verify-donor") {
+        if (argc < 4) { cout << "ERROR|verify-donor requires donor ID and email.\n"; return 1; }
+        const Donor* donor = findVerifiedDonor(system, argv[2], argv[3]);
+        if (donor == nullptr) {
+            cout << "ERROR|Donor verification failed. Please check donor ID and email.\n";
+            return 1;
+        }
+        cout << "SUCCESS|Donor verified successfully.|" << donor->getId() << "\n";
+    } else if (command == "donor-statement") {
+        if (argc < 4) { cout << "ERROR|donor-statement requires donor ID and email.\n"; return 1; }
+        printDonorStatement(system, argv[2], argv[3]);
+    } else if (command == "donor-donations") {
+        if (argc < 4) { cout << "ERROR|donor-donations requires donor ID and email.\n"; return 1; }
+        printDonorDonations(system, argv[2], argv[3]);
+    } else if (command == "donor-campaigns") {
+        if (argc < 4) { cout << "ERROR|donor-campaigns requires donor ID and email.\n"; return 1; }
+        printDonorCampaigns(system, argv[2], argv[3]);
+    } else if (command == "donor-allocations") {
+        if (argc < 4) { cout << "ERROR|donor-allocations requires donor ID and email.\n"; return 1; }
+        printDonorAllocations(system, argv[2], argv[3]);
     } else if (command == "validation-demo") {
         runValidationDemo(system);
     } else if (command == "oop-demo") {

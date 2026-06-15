@@ -55,6 +55,16 @@ def main():
         code, out = run(["generate-report", "monthly", "2026-06"], data_dir)
         assert_contains(out, "SUCCESS|Monthly report")
 
+        code, out = run(["verify-donor", "DNR001", "ahmed.khan@example.com"], data_dir)
+        assert_contains(out, "SUCCESS|Donor verified")
+
+        code, out = run(["donor-statement", "DNR001", "ahmed.khan@example.com"], data_dir)
+        assert_contains(out, "donorName|Ahmed Khan")
+        assert_contains(out, "totalDonated|75000.00")
+
+        code, out = run(["donor-statement", "DNR001", "wrong@example.com"], data_dir)
+        assert_contains(out, "ERROR|Donor verification failed")
+
         code, out = run(["oop-demo"], data_dir)
         assert_contains(out, "Inheritance")
         assert_contains(out, "operator+ on Donation")

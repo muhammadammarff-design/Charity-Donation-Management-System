@@ -32,7 +32,12 @@ The Charity & Donation Management System is a C++ OOP application with a Streaml
 - OOP demonstrations
 - data consistency checks
 
-Streamlit is used only as a GUI wrapper. It calls the C++ executable through Python `subprocess` and displays forms, tables, charts, and validation evidence.
+Streamlit is used only as a GUI wrapper. It calls the C++ executable through Python `subprocess` and displays forms, tables, charts, validation evidence, and donor transparency views.
+
+The updated interface has two access modes:
+
+- **Donor Portal:** read-only donor login using Donor ID + email to view personal donation history and supported campaign transparency.
+- **Admin Area:** simple Streamlit-level demo login for CRUD operations and reports.
 
 This design gives the project an advanced interface while keeping the viva and main implementation focused on C++.
 
@@ -168,6 +173,14 @@ Raw evidence file: `docs/evidence/oop_evidence.txt`
 - campaign report
 - records total donations, allocations, and remaining balance
 
+### 8.7 Donor Transparency Portal
+
+- donor verifies using Donor ID and email
+- donor views only their own donation history
+- donor views campaigns they supported
+- donor sees campaign-level allocations for transparency
+- donor portal is read-only and separated from admin CRUD operations
+
 ---
 
 ## 9. Data Management
@@ -223,6 +236,10 @@ Raw validation evidence file: `docs/evidence/validation_evidence.txt`
 ### Dashboard Summary Output
 
 ![Dashboard Summary](screenshots/01_dashboard_summary.svg)
+
+### Donor Portal Statement Output
+
+![Donor Portal Statement](screenshots/05_donor_statement_evidence.svg)
 
 ### Campaign Table Output
 

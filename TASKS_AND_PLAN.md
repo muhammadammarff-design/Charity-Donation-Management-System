@@ -6,7 +6,7 @@ Use **C++ OOP core + Streamlit GUI wrapper**.
 
 Reason: viva is from C++, but GUI gives extra presentation value in the rubric. Streamlit does not contain business logic; it only calls the C++ executable.
 
-Authentication decision: **No full login system**. The rubric does not require login, and adding it would increase complexity without improving the main OOP marks. The project focuses on OOP, CRUD, validation, file handling, GUI, UML, reports, and viva readiness.
+Authentication decision after dashboard review: **Add simple GUI-level admin login + donor verification portal**. This separates public donor viewing from admin CRUD operations while keeping the main OOP logic in C++. The donor verification commands are handled by the C++ executable.
 
 ---
 
@@ -54,6 +54,11 @@ The project uses a normal student-friendly C++ level:
 | 21 | Generate report in Markdown and HTML | Completed |
 | 22 | Add README and run instructions | Completed |
 | 23 | Final compile/test verification | Completed |
+| 24 | Redesign dashboard with calmer accessible theme | Completed |
+| 25 | Add donor read-only transparency portal | Completed |
+| 26 | Add simple Streamlit admin login | Completed |
+| 27 | Add C++ donor verification/statement commands | Completed |
+| 28 | Re-run compile and automated tests | Completed |
 
 ---
 

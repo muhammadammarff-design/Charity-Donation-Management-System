@@ -6,6 +6,7 @@ This folder contains screenshot-style SVG evidence generated from actual C++ CLI
 - `02_campaigns_table.svg`
 - `03_validation_evidence.svg`
 - `04_oop_evidence.svg`
+- `05_donor_statement_evidence.svg`
 
 For final submission, also capture real Streamlit GUI screenshots after running:
 

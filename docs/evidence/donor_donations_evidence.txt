@@ -1,0 +1,2 @@
+id|donorId|campaignId|amount|date|paymentMethod|note
+DNT001|DNR001|CAM001|75000.00|2026-06-12|Bank Transfer|Initial flood relief support

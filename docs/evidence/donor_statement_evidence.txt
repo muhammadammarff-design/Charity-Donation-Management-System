@@ -1,0 +1,8 @@
+metric|value
+donorId|DNR001
+donorName|Ahmed Khan
+email|ahmed.khan@example.com
+donorType|Individual
+totalDonated|75000.00
+donationCount|1
+campaignsSupported|1

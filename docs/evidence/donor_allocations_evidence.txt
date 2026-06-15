@@ -1,0 +1,2 @@
+id|beneficiaryId|campaignId|amount|date|purpose|approvedBy
+ALC001|BEN001|CAM001|60000.00|2026-06-18|Ration bags and temporary shelter|Admin
