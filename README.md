@@ -1,6 +1,6 @@
 # Charity & Donation Management System
 
-**OOP Project | C++ Core + Streamlit GUI**
+**OOP Project | C++ Core + Vercel/Supabase Web Dashboard**
 
 Team members:
 
@@ -10,357 +10,223 @@ Team members:
 
 ---
 
-## 1. Project Overview
+## Project Overview
 
-This project is a **Charity and Donation Management System** designed for small NGOs and charity organizations. It tracks:
+This project solves a real charity transparency problem: donors, campaigns, beneficiaries, donations, allocations, and reports are tracked in one system.
 
-- donors
-- campaigns
-- beneficiaries
-- donations
-- fund allocations
-- reports
+The repository contains two important parts:
 
-The main goal is transparency: every donation received and every rupee allocated to beneficiaries is recorded.
+1. **C++ OOP Core** in `cpp_core/`  
+   Used for viva and OOP evaluation: classes, inheritance, polymorphism, constructors, operator overloading, file handling, validation, reports.
 
----
-
-## 2. Important Architecture Decision
-
-The project follows this rule:
-
-> **C++ is the real project. Streamlit is only the GUI/interface wrapper.**
-
-The complete OOP logic, input validation, file handling, CRUD operations, reports, inheritance, polymorphism, and operator overloading are implemented in C++.
-
-Streamlit only calls the compiled C++ executable through Python `subprocess` and displays forms/tables/charts.
-
-This keeps the viva focused on C++ OOP while still giving the project a polished GUI.
+2. **Web Dashboard** using **Vercel + Supabase**  
+   Used as the polished hosted interface with real cloud data persistence.
 
 ---
 
-## 3. Features
+## Why Vercel + Supabase?
 
-### Donor Management
+Streamlit had HTML/CSS rendering issues for a custom dashboard. The final hosted version uses:
 
-- Add donor
-- View donors
-- Update donor details
-- Delete donor if no donation history exists
-- Track total donated amount
+- **Vercel** for frontend hosting
+- **Supabase PostgreSQL** for database, auth, and APIs
+- **C++ source code** preserved for OOP viva and report
 
-### Campaign Management
-
-- Add campaign
-- View campaign progress
-- Update campaign
-- Delete campaign if not linked with records
-- Track target, collected, allocated, available balance, and progress percentage
-
-### Beneficiary Management
-
-- Add beneficiary
-- Link beneficiary to campaign
-- View aid received
-- Update beneficiary
-- Delete beneficiary if no allocation history exists
-
-### Donation Recording
-
-- Record donation by donor and campaign
-- Validate amount/date/payment method
-- Update donor and campaign totals automatically
-
-### Fund Allocation
-
-- Allocate collected funds to beneficiaries
-- Prevent allocation greater than available campaign balance
-- Validate campaign-beneficiary relationship
-
-### Reports
-
-- Monthly reports
-- Campaign-level reports
-- Stored in `reports.txt`
-- Operator overloading demonstration with report merging
-
-### Donor Transparency Portal
-
-- Donor can verify using Donor ID + email
-- Donor can view personal donation history
-- Donor can view supported campaign progress
-- Donor can see campaign-level fund allocation transparency
-- Read-only donor interface prevents accidental data modification
-
-### Admin Access
-
-- Streamlit-level admin login protects management pages
-- Default demo credentials: `admin` / `admin123`
-- Admin can record donations, allocate funds, create campaigns, filter active campaigns, generate reports, and export a PDF summary
-- Main C++ OOP logic remains separate from this GUI-level access control
-
-### Validation Evidence
-
-The C++ core rejects invalid data such as:
-
-- empty donor name
-- invalid age
-- invalid email
-- negative campaign target
-- invalid date range
-- negative donation amount
-- invalid donation date
-- fund allocation greater than balance
+Supabase stores live dynamic data. GitHub stores source code.
 
 ---
 
-## 4. OOP Concepts Implemented
+## Features
 
-| Concept | Implementation |
-|---|---|
-| Classes and Objects | `Person`, `Donor`, `Beneficiary`, `Campaign`, `Donation`, `FundAllocation`, `Report`, `FileManager`, `CharitySystem` |
-| Encapsulation | Private/protected data members with public getters/setters |
-| Inheritance | `Donor` and `Beneficiary` inherit from `Person` |
-| Polymorphism | `displayInfo()` is virtual in `Person` and overridden in child classes |
-| Constructors | Default, parameterized, and overloaded constructors used across classes |
-| Operator Overloading | `+`, `>`, and `<` overloaded in meaningful classes |
-| File Handling | Data stored in `.txt` files under `data/` |
-| Object Relationships | Donations link donors/campaigns; allocations link beneficiaries/campaigns |
+### Donor Portal
 
----
+- Donor registration
+- System-generated Donor ID, e.g. `DNR001`
+- Donor login using Donor ID + email
+- Donation statement
+- Donation history
+- Campaign impact view
+- Allocation evidence without beneficiary private contact details
 
-## 5. Project Structure
+### Admin Dashboard
+
+- Admin login through Supabase Auth
+- Financial snapshot
+- Priority actions
+- Campaign progress
+- Recent activity
+- Record donation
+- Allocate funds
+- Create campaign
+- Filter active campaigns
+- Generate monthly reports
+- Export/print report PDF
+
+### Database
+
+Supabase PostgreSQL tables:
+
+- `donors`
+- `campaigns`
+- `beneficiaries`
+- `donations`
+- `allocations`
+- `reports`
+- `profiles`
+
+Schema file:
 
 ```text
-Charity-Donation-Management-System/
-│
-├── cpp_core/
-│   ├── include/              # C++ header files
-│   └── src/                  # C++ source files
-│
-├── data/                     # Text-file database
-│   ├── donors.txt
-│   ├── beneficiaries.txt
-│   ├── campaigns.txt
-│   ├── donations.txt
-│   ├── allocations.txt
-│   └── reports.txt
-│
-├── docs/
-│   ├── report.md
-│   ├── report.html
-│   ├── uml/
-│   ├── evidence/
-│   └── screenshots/
-│
-├── tests/
-│   └── run_core_tests.py
-│
-├── streamlit_app.py          # GUI wrapper
-├── build_core.py             # Cross-platform build helper
-├── Makefile                  # Linux/macOS build commands
-├── requirements.txt          # Python dependencies
-├── packages.txt              # Linux packages for Streamlit Cloud
-└── README.md
+supabase/schema.sql
 ```
 
 ---
 
-## 6. How to Run Locally
+## OOP Concepts in C++ Core
 
-### Step 1: Compile the C++ Core
+| Concept | Implementation |
+|---|---|
+| Classes and Objects | `Person`, `Donor`, `Beneficiary`, `Campaign`, `Donation`, `FundAllocation`, `Report`, `FileManager`, `CharitySystem` |
+| Encapsulation | Private/protected data members with getters/setters |
+| Inheritance | `Donor` and `Beneficiary` inherit from `Person` |
+| Polymorphism | `displayInfo()` is virtual in `Person` and overridden |
+| Constructors | Default, parameterized, and overloaded constructors |
+| Operator Overloading | `+`, `>`, `<` in meaningful classes |
+| File Handling | C++ text-file storage under `data/` |
+
+---
+
+## Local C++ Testing
+
+Compile C++ core:
 
 ```bash
 python3 build_core.py
 ```
 
-or on Linux/macOS:
-
-```bash
-make
-```
-
-### Step 2: Seed Demo Data
+Seed demo data:
 
 ```bash
 ./build/charity_app seed
 ```
 
-On Windows:
-
-```powershell
-.\build\charity_app.exe seed
-```
-
-### Step 3: Run Console Version
-
-```bash
-./build/charity_app
-```
-
-### Step 4: Run Streamlit GUI
-
-Install Python dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run GUI:
-
-```bash
-streamlit run streamlit_app.py
-```
-
----
-
-## 7. CLI Commands
-
-```bash
-./build/charity_app help
-./build/charity_app seed
-./build/charity_app clear
-./build/charity_app summary
-./build/charity_app list donors
-./build/charity_app list campaigns
-./build/charity_app list beneficiaries
-./build/charity_app list donations
-./build/charity_app list allocations
-./build/charity_app list reports
-```
-
-Example add donor:
-
-```bash
-./build/charity_app add-donor "Ahmed Khan" 35 "+92 300 1111111" "ahmed@example.com" "Lahore" "Individual"
-```
-
-Example record donation:
-
-```bash
-./build/charity_app record-donation DNR001 CAM001 5000 2026-06-14 Cash "Food support"
-```
-
-Example donor portal commands:
-
-```bash
-./build/charity_app verify-donor DNR001 ahmed.khan@example.com
-./build/charity_app donor-statement DNR001 ahmed.khan@example.com
-./build/charity_app donor-donations DNR001 ahmed.khan@example.com
-./build/charity_app donor-campaigns DNR001 ahmed.khan@example.com
-./build/charity_app donor-allocations DNR001 ahmed.khan@example.com
-```
-
-Example validation demo:
-
-```bash
-./build/charity_app validation-demo
-```
-
-Example OOP demo:
-
-```bash
-./build/charity_app oop-demo
-```
-
----
-
-## 8. Run Tests
+Run tests:
 
 ```bash
 python3 tests/run_core_tests.py
 ```
 
-or:
+Show OOP evidence:
 
 ```bash
-make test
+./build/charity_app oop-demo
+```
+
+Show validation evidence:
+
+```bash
+./build/charity_app validation-demo
 ```
 
 ---
 
-## 9. Deployment Recommendation
+## Web App Local Setup
 
-Recommended deployment is **Streamlit Community Cloud**:
+Install Node dependencies:
 
-1. Push this folder to GitHub.
-2. Go to Streamlit Community Cloud.
-3. Create a new app from the GitHub repository.
-4. Set main file path to:
+```bash
+npm install
+```
+
+Create `.env` locally:
 
 ```text
-streamlit_app.py
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-5. Streamlit will install Python requirements from `requirements.txt`.
-6. `packages.txt` includes `build-essential` so the C++ core can compile on Linux.
+Run locally:
 
-### Important Persistence Note
-
-The C++ core saves data dynamically into text files in the `data/` folder. On a local computer, this persistence works normally.
-
-On Streamlit Cloud, local files may reset after app restart/redeployment. To save changed data back into the GitHub repository, configure optional GitHub sync in Streamlit secrets:
-
-```toml
-GITHUB_TOKEN = "your_fine_grained_token_with_contents_read_write"
-GITHUB_REPO = "your-username/Charity-Donation-Management-System"
-GITHUB_BRANCH = "main"
-GITHUB_DATA_PREFIX = "data"
+```bash
+npm run dev
 ```
 
-After this is configured, admin data-changing actions can sync the text data files to GitHub. Without these secrets, the app still works but cloud changes are demo-session/local only.
+Build:
 
-For final marking, submit:
+```bash
+npm run build
+```
+
+---
+
+## Supabase Setup
+
+Follow:
+
+```text
+SUPABASE_SETUP.md
+```
+
+Quick summary:
+
+1. Create Supabase project.
+2. Run `supabase/schema.sql` in SQL Editor.
+3. Create admin user in Supabase Auth.
+4. Insert admin profile row.
+5. Add Supabase URL and anon key to Vercel environment variables.
+
+---
+
+## Demo Credentials
+
+After running schema:
+
+### Donor
+
+```text
+Donor ID: DNR001
+Email: ahmed.khan@example.com
+```
+
+### Admin
+
+Create this in Supabase Auth:
+
+```text
+Email: admin@example.com
+Password: admin123456
+```
+
+Then insert admin profile as explained in `SUPABASE_SETUP.md`.
+
+---
+
+## Project Structure
+
+```text
+Charity-Donation-Management-System/
+├── cpp_core/                 # C++ OOP source code
+├── data/                     # C++ local text-file sample data
+├── docs/                     # Report, UML, evidence
+├── src/                      # Vercel frontend JavaScript/CSS
+├── supabase/schema.sql       # Supabase PostgreSQL backend
+├── index.html
+├── package.json
+├── vercel.json
+├── build_core.py
+├── tests/run_core_tests.py
+├── SUPABASE_SETUP.md
+└── README.md
+```
+
+---
+
+## Submission
+
+Submit:
 
 - GitHub repository link
-- Streamlit app link if deployed
-- report from `docs/report.html` or `docs/report.md`
-- screenshots/evidence from `docs/screenshots/` and `docs/evidence/`
-
----
-
-## 10. Why Simple GUI-Level Login?
-
-The updated app includes a simple **Streamlit-level admin login** and a **donor verification portal**. This is enough for the project demonstration because the rubric focuses mainly on C++ OOP, CRUD, validation, file handling, GUI, UML, reports, and viva understanding.
-
-The login is not presented as production-grade banking security. It is a demo access-control layer so public visitors use the read-only donor portal while admin pages remain separated.
-
-The project still focuses on:
-
-- strong C++ OOP
-- CRUD features
-- donor transparency portal
-- validation
-- file handling
-- GUI
-- reports
-- UML
-- viva-friendly explanation
-
----
-
-## 11. Viva Talking Points
-
-1. **Why C++ core + Streamlit GUI?**  
-   To keep OOP logic in C++ while providing an advanced GUI.
-
-2. **Where is inheritance used?**  
-   `Donor` and `Beneficiary` inherit from `Person`.
-
-3. **Where is polymorphism used?**  
-   `Person::displayInfo()` is virtual and overridden.
-
-4. **Where is encapsulation used?**  
-   Data members are private/protected and accessed through methods.
-
-5. **Where is operator overloading used?**  
-   `Donor`, `Donation`, `Campaign`, and `Report` overload operators.
-
-6. **Where is file handling used?**  
-   `FileManager` reads/writes text files in the `data/` folder.
-
-7. **How is validation handled?**  
-   Validation is implemented in C++ before saving any record.
-
-8. **How is transparency achieved?**  
-   Every donation and allocation is saved and reports show collected, allocated, and remaining funds.
+- Vercel live app link
+- project report from `docs/report.html` or `docs/report.md`
+- UML diagrams from `docs/uml/`
+- evidence files from `docs/evidence/`

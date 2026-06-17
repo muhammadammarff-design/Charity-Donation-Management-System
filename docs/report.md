@@ -1,45 +1,29 @@
 # Charity & Donation Management System — OOP Project Report
 
-**Course:** Object-Oriented Programming (OOP)  
-**Language:** C++  
-**GUI:** Streamlit wrapper over C++ executable  
-**Team Members:** Ali Raza (2540010), Muhammad Ammar (2540004), Taha Ali (2540008)  
-**Project Type:** Management System  
-**Submission Project:** Charity and Donation Management System
+**Course:** Object-Oriented Programming  
+**Core Language:** C++17  
+**Hosted Interface:** Vercel frontend + Supabase PostgreSQL backend  
+**Team Members:** Ali Raza (2540010), Muhammad Ammar (2540004), Taha Ali (2540008)
 
 ---
 
 ## 1. Problem Definition
 
-Small charity organizations often manage donors, donations, beneficiaries, and campaign expenses using paper files or simple spreadsheets. This causes three major problems:
-
-1. Donors cannot easily see where their money was used.
-2. Charity staff can lose track of collected and distributed funds.
-3. There is weak accountability because donation and allocation records are separated.
-
-This project solves the problem by providing a structured system where every donor, campaign, donation, beneficiary, and fund allocation is stored and linked.
+Small charities often track donors, campaigns, beneficiaries, donations, and fund allocations using paper records or spreadsheets. This creates weak transparency because donors cannot easily see how their money was used.
 
 ---
 
-## 2. Proposed Solution
+## 2. Final Solution Design
 
-The Charity & Donation Management System is a C++ OOP application with a Streamlit GUI. The C++ core performs all important operations:
+The final system has two parts:
 
-- CRUD operations
-- input validation
-- file handling
-- report generation
-- OOP demonstrations
-- data consistency checks
+1. **C++ OOP Core**  
+   Implements the main OOP project concepts: classes, inheritance, polymorphism, constructors, operator overloading, validation, file handling, and reports.
 
-Streamlit is used only as a GUI wrapper. It calls the C++ executable through Python `subprocess` and displays forms, tables, charts, validation evidence, and donor transparency views.
+2. **Hosted Web Dashboard**  
+   Uses Vercel for frontend hosting and Supabase PostgreSQL for live cloud data. This avoids Streamlit HTML rendering problems and provides a professional dashboard interface.
 
-The updated interface has two access modes:
-
-- **Donor Portal:** read-only donor login using Donor ID + email to view personal donation history and supported campaign transparency.
-- **Admin Area:** simple Streamlit-level demo login for CRUD operations and reports.
-
-This design gives the project an advanced interface while keeping the viva and main implementation focused on C++.
+GitHub stores source code. Supabase stores live application data.
 
 ---
 
@@ -47,270 +31,134 @@ This design gives the project an advanced interface while keeping the viva and m
 
 | Area | Technology |
 |---|---|
-| Core Language | C++17 |
-| GUI | Streamlit |
-| Storage | Text files (`.txt`) |
-| Build Tool | `g++`, `build_core.py`, `Makefile` |
-| Documentation | Markdown, HTML, Mermaid/SVG UML |
-| Version Control | GitHub-ready project structure |
+| OOP Core | C++17 |
+| Hosted Frontend | HTML, CSS, JavaScript, Vite, Vercel |
+| Cloud Database | Supabase PostgreSQL |
+| Authentication | Supabase Auth for admin, Donor ID + email for donor portal |
+| Local C++ Storage | Text files in `data/` |
+| Documentation | Markdown, HTML, SVG UML |
 
 ---
 
-## 4. System Design
+## 4. UML Diagrams
 
-The system is divided into two layers:
-
-### 4.1 C++ OOP Core
-
-The C++ core contains all business logic. It validates data and saves records in text files.
-
-### 4.2 Streamlit GUI Layer
-
-The Streamlit layer provides a user-friendly interface for:
-
-- dashboard
-- donor management
-- campaign management
-- beneficiary management
-- donation recording
-- fund allocation
-- reports
-- validation evidence
-- OOP evidence
-
-The GUI does not replace the C++ logic. It only passes inputs to the C++ executable.
-
----
-
-## 5. UML Diagrams
-
-### 5.1 UML Class Diagram
+### Class Diagram
 
 ![UML Class Diagram](uml/class_diagram.svg)
 
-### 5.2 UML Use Case Diagram
+### Use Case Diagram
 
 ![UML Use Case Diagram](uml/use_case_diagram.svg)
 
-Mermaid sources are also available in `docs/uml/class_diagram.mmd` and `docs/uml/use_case_diagram.mmd`.
-
 ---
 
-## 6. Class Structure
+## 5. C++ Class Structure
 
-| Class | Type | Responsibility |
-|---|---|---|
-| `Person` | Base class | Stores common identity fields: ID, name, age, contact, address |
-| `Donor` | Derived class | Represents donors and tracks total donations |
-| `Beneficiary` | Derived class | Represents aid receivers and tracks received support |
-| `Campaign` | Core class | Tracks campaign target, collected amount, allocated amount, progress |
-| `Donation` | Core class | Stores a single donation event |
-| `FundAllocation` | Core class | Stores fund distribution to beneficiaries |
-| `Report` | Summary class | Stores monthly/campaign-level summaries |
-| `FileManager` | Utility class | Reads/writes all text-file data |
-| `CharitySystem` | Controller class | Coordinates all operations and keeps records consistent |
-
----
-
-## 7. OOP Concepts Implementation
-
-| OOP Concept | Implementation |
+| Class | Responsibility |
 |---|---|
-| Classes and Objects | All entities are represented as classes and runtime objects |
-| Encapsulation | Data members are private/protected with getters/setters |
+| `Person` | Base class for shared identity fields |
+| `Donor` | Donor details and total donation tracking |
+| `Beneficiary` | Beneficiary details and aid received tracking |
+| `Campaign` | Target, collected, allocated, and available balance |
+| `Donation` | Donation transaction record |
+| `FundAllocation` | Fund distribution record |
+| `Report` | Monthly/campaign summary |
+| `FileManager` | Text-file persistence |
+| `CharitySystem` | Controller for CRUD, validation, reports |
+
+---
+
+## 6. OOP Concepts
+
+| Concept | Implementation |
+|---|---|
+| Encapsulation | Private/protected members with methods |
 | Inheritance | `Donor` and `Beneficiary` inherit from `Person` |
-| Polymorphism | `displayInfo()` is virtual in `Person` and overridden in derived classes |
-| Constructors | Default, parameterized, and overloaded constructors are used |
-| Operator Overloading | `+`, `>`, `<` are overloaded in `Donor`, `Donation`, `Campaign`, `Report` |
-| File Handling | `FileManager` manages `.txt` files |
-| Object Relationships | Donations link donors and campaigns; allocations link beneficiaries and campaigns |
-
-### OOP Evidence Output
-
-![OOP Evidence](screenshots/04_oop_evidence.svg)
-
-Raw evidence file: `docs/evidence/oop_evidence.txt`
+| Polymorphism | Virtual `displayInfo()` overridden in derived classes |
+| Constructors | Default, parameterized, and overloaded constructors |
+| Operator Overloading | `+`, `>`, `<` in `Donor`, `Donation`, `Campaign`, `Report` |
+| File Handling | C++ reads/writes `.txt` files |
 
 ---
 
-## 8. Functional Modules
+## 7. Hosted Web Features
 
-### 8.1 Donor Management
+### Donor Portal
 
-- add donor
-- update donor
-- delete donor if no donation history exists
-- view total donated amount
+- Register donor
+- Generate donor ID automatically
+- Login using Donor ID + email
+- View donation history
+- View supported campaign impact
+- Hide beneficiary contact details
 
-### 8.2 Campaign Management
+### Admin Area
 
-- add campaign
-- update campaign
-- delete campaign if not linked to records
-- view target, collected amount, allocated amount, available balance, and progress
-
-### 8.3 Beneficiary Management
-
-- add beneficiary
-- update beneficiary
-- delete beneficiary if no allocation history exists
-- link beneficiary to campaign
-
-### 8.4 Donation Recording
-
-- record donation with donor ID, campaign ID, amount, date, method, and note
-- update donor total and campaign collection automatically
-
-### 8.5 Fund Allocation
-
-- allocate funds to beneficiaries
-- prevent over-allocation
-- ensure beneficiary belongs to selected campaign
-
-### 8.6 Report Generation
-
-- monthly report
-- campaign report
-- records total donations, allocations, and remaining balance
-
-### 8.7 Donor Transparency Portal
-
-- donor verifies using Donor ID and email
-- donor views only their own donation history
-- donor views campaigns they supported
-- donor sees campaign-level allocations for transparency
-- donor portal is read-only and separated from admin CRUD operations
+- Admin login with Supabase Auth
+- Dashboard metrics
+- Priority actions
+- Create campaigns
+- Filter active campaigns
+- Record donations
+- Allocate funds
+- Generate monthly reports
+- Export/print report
 
 ---
 
-## 9. Data Management
+## 8. Database Design
 
-The system stores data in text files under the `data/` folder:
+Supabase tables:
 
-| File | Data Stored |
-|---|---|
-| `donors.txt` | Donor records |
-| `beneficiaries.txt` | Beneficiary records |
-| `campaigns.txt` | Campaign records |
-| `donations.txt` | Donation records |
-| `allocations.txt` | Fund allocation records |
-| `reports.txt` | Generated reports |
+- `donors`
+- `campaigns`
+- `beneficiaries`
+- `donations`
+- `allocations`
+- `reports`
+- `profiles`
 
-The file format is pipe-delimited text. Example:
+Schema file:
 
 ```text
-DNR001|Ahmed Khan|35|+92 300 1111111|ahmed.khan@example.com|Lahore|Individual|75000.00
+supabase/schema.sql
 ```
 
+The schema includes triggers for generated codes such as `DNR001`, `CAM001`, and `RPT001`, plus validation for donation and allocation amounts.
+
 ---
 
-## 10. Input Validation
+## 9. Input Validation
 
-Validation is implemented in the C++ core, not only in the GUI. This ensures that even if the GUI is bypassed, invalid data is rejected.
+Validation is implemented in both C++ and Supabase:
 
-### Validation Rules
-
-| Input | Rule |
+| Validation | Example |
 |---|---|
-| Name/title/description | Cannot be empty |
-| Age | Must be between 1 and 120 |
-| Contact | Must contain 7 to 15 digits with valid phone characters |
-| Email | Must match email pattern |
-| Amount | Must be greater than zero |
-| Date | Must be valid `YYYY-MM-DD` |
-| Month | Must be valid `YYYY-MM` |
-| Campaign date range | End date cannot be before start date |
-| Fund allocation | Cannot exceed campaign available balance |
-| Beneficiary allocation | Beneficiary must be linked to selected campaign |
-
-### Validation Test Evidence
-
-![Validation Evidence](screenshots/03_validation_evidence.svg)
-
-Raw validation evidence file: `docs/evidence/validation_evidence.txt`
+| Positive amount | Donation/allocation amount must be greater than zero |
+| Over-allocation prevention | Allocation cannot exceed available campaign balance |
+| Campaign relationship | Beneficiary must belong to selected campaign |
+| Donor verification | Donor ID + email must match |
+| Date validation | C++ validates date formats |
 
 ---
 
-## 11. Program Output Screenshots
+## 10. Testing
 
-### Dashboard Summary Output
-
-![Dashboard Summary](screenshots/01_dashboard_summary.svg)
-
-### Donor Portal Statement Output
-
-![Donor Portal Statement](screenshots/05_donor_statement_evidence.svg)
-
-### Campaign Table Output
-
-![Campaign Table](screenshots/02_campaigns_table.svg)
-
-The Streamlit GUI also shows these outputs as dashboard metrics, tables, and charts.
-
----
-
-## 12. Testing Summary
-
-A Python test script is included to test the C++ executable in an isolated temporary data folder:
+C++ tests:
 
 ```bash
 python3 tests/run_core_tests.py
 ```
 
-The tests verify:
-
-- invalid donor name rejected
-- invalid campaign target rejected
-- demo data seeding works
-- summary totals are correct
-- negative donation rejected
-- over-allocation rejected
-- monthly report generation works
-- OOP evidence command works
-
-Test result:
-
-```text
-All C++ core tests passed.
-```
-
----
-
-## 13. Deployment and GUI
-
-The GUI is implemented using Streamlit. To run locally:
+Evidence commands:
 
 ```bash
-pip install -r requirements.txt
-streamlit run streamlit_app.py
+./build/charity_app validation-demo
+./build/charity_app oop-demo
 ```
 
-The app can be deployed on Streamlit Community Cloud using GitHub. The repository contains:
-
-- `requirements.txt` for Python dependencies
-- `packages.txt` for Linux compiler package
-- `streamlit_app.py` as the main app file
-
-Note: Cloud local file storage may reset after redeployment, so the GUI includes a **Seed Demo Data** button. Local execution remains the best mode for demonstrating persistent text-file storage.
-
 ---
 
-## 14. Innovation and Practical Usefulness
+## 11. Conclusion
 
-The project is more useful than a basic CRUD demo because it solves a real transparency issue:
-
-- donors can be tracked
-- campaigns show funding progress
-- beneficiaries are linked to campaigns
-- allocations cannot exceed available funds
-- reports show money received, used, and remaining
-
-This provides accountability for a small charity organization.
-
----
-
-## 15. Conclusion
-
-The Charity & Donation Management System successfully implements a complete C++ OOP project with a polished GUI wrapper. It includes meaningful classes, inheritance, polymorphism, constructors, operator overloading, file handling, CRUD operations, input validation, reports, UML diagrams, evidence outputs, and test cases.
-
-The final design is suitable for viva because the main logic remains in C++, while Streamlit improves presentation and user experience.
+The project preserves the required C++ OOP implementation while using a modern hosted web dashboard for a better user interface and persistent cloud data. This gives both strong viva-ready C++ code and a professional live application.

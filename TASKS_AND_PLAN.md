@@ -1,89 +1,69 @@
-# Project Tasks and Execution Plan
+# Project Tasks and Final Architecture
 
 ## Final Decision
 
-Use **C++ OOP core + Streamlit GUI wrapper**.
+The project now uses:
 
-Reason: viva is from C++, but GUI gives extra presentation value in the rubric. Streamlit does not contain business logic; it only calls the C++ executable.
+```text
+C++ OOP Core + Vercel Frontend + Supabase PostgreSQL Backend
+```
 
-Authentication decision after dashboard review: **Add simple GUI-level admin login + donor verification portal**. This separates public donor viewing from admin CRUD operations while keeping the main OOP logic in C++. The donor verification commands are handled by the C++ executable.
+Reason:
 
----
-
-## C++ Level
-
-The project uses a normal student-friendly C++ level:
-
-- classes and objects
-- inheritance
-- virtual function polymorphism
-- vectors
-- file handling with `fstream`
-- string processing
-- basic validation
-- constructors
-- operator overloading
-- no advanced frameworks or external C++ libraries
+- Streamlit caused custom HTML/CSS rendering issues.
+- Vercel handles the polished frontend correctly.
+- Supabase provides free PostgreSQL persistence, auth, APIs, and Row Level Security.
+- C++ source code remains the OOP core for viva and project report.
 
 ---
 
-## Task List
+## Completed Tasks
 
 | # | Task | Status |
 |---|---|---|
-| 1 | Read proposal and rubric | Completed |
-| 2 | Decide GUI strategy | Completed |
-| 3 | Create project folder structure | Completed |
-| 4 | Implement C++ classes | Completed |
-| 5 | Implement file handling | Completed |
-| 6 | Implement validation | Completed |
-| 7 | Implement CRUD operations | Completed |
-| 8 | Implement donation recording | Completed |
-| 9 | Implement fund allocation with balance checks | Completed |
-| 10 | Implement monthly/campaign reports | Completed |
-| 11 | Implement CLI command interface | Completed |
-| 12 | Implement interactive console menu | Completed |
-| 13 | Implement OOP evidence command | Completed |
-| 14 | Implement validation evidence command | Completed |
-| 15 | Implement Streamlit GUI wrapper | Completed |
-| 16 | Add dashboard, forms, tables, charts | Completed |
-| 17 | Add seed/reset tools | Completed |
-| 18 | Add automated tests | Completed |
-| 19 | Generate UML diagrams | Completed |
-| 20 | Generate evidence files | Completed |
-| 21 | Generate report in Markdown and HTML | Completed |
-| 22 | Add README and run instructions | Completed |
-| 23 | Final compile/test verification | Completed |
-| 24 | Redesign dashboard with calmer accessible theme | Completed |
-| 25 | Add donor read-only transparency portal | Completed |
-| 26 | Add simple Streamlit admin login | Completed |
-| 27 | Add C++ donor verification/statement commands | Completed |
-| 28 | Re-run compile and automated tests | Completed |
+| 1 | Preserve C++ OOP core | Completed |
+| 2 | Preserve C++ tests and evidence commands | Completed |
+| 3 | Remove Streamlit-specific app files | Completed |
+| 4 | Create Vercel/Vite frontend | Completed |
+| 5 | Create Supabase PostgreSQL schema | Completed |
+| 6 | Add donor registration with generated donor ID | Completed |
+| 7 | Add donor login and read-only donor portal | Completed |
+| 8 | Add admin login using Supabase Auth | Completed |
+| 9 | Add dashboard, campaign, and report pages | Completed |
+| 10 | Add donation recording | Completed |
+| 11 | Add fund allocation with database validation | Completed |
+| 12 | Add campaign creation and active filter | Completed |
+| 13 | Add report generation | Completed |
+| 14 | Add PDF/print export | Completed |
+| 15 | Add setup guide for Supabase + Vercel | Completed |
+| 16 | Clean irrelevant old files | Completed |
 
 ---
 
-## Execution Order Used
+## Important Notes
 
-1. Built the C++ core first so the actual OOP project is strong.
-2. Added CLI commands so Streamlit can call the C++ executable safely.
-3. Added validation in C++ before saving anything.
-4. Added text-file persistence.
-5. Added demo seed data for screenshots and viva.
-6. Built Streamlit as a GUI wrapper.
-7. Added automated tests and evidence output.
-8. Generated UML and report files.
+- GitHub stores source code.
+- Supabase stores live app data.
+- Vercel hosts the frontend.
+- C++ source remains for OOP viva and report.
 
 ---
 
-## Final Verification Commands
+## Verification
+
+C++ verification commands:
 
 ```bash
 python3 build_core.py
 ./build/charity_app seed
-./build/charity_app summary
+python3 tests/run_core_tests.py
 ./build/charity_app validation-demo
 ./build/charity_app oop-demo
-python3 tests/run_core_tests.py
 ```
 
-All core tests passed.
+Frontend verification:
+
+```bash
+npm install
+npm run build
+```
