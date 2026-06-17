@@ -316,7 +316,9 @@ declare
   total_d numeric(12,2);
   total_a numeric(12,2);
 begin
-  if not is_admin() then
+  -- Allow Supabase SQL Editor / setup scripts where auth.uid() is null.
+  -- Block normal authenticated non-admin users in the live app.
+  if auth.uid() is not null and not is_admin() then
     raise exception 'Admin access required.';
   end if;
 
@@ -352,6 +354,11 @@ create policy "admins manage beneficiaries" on beneficiaries for all to authenti
 create policy "admins manage donations" on donations for all to authenticated using (is_admin()) with check (is_admin());
 create policy "admins manage allocations" on allocations for all to authenticated using (is_admin()) with check (is_admin());
 create policy "admins manage reports" on reports for all to authenticated using (is_admin()) with check (is_admin());
+
+-- Explicit API grants for PostgREST/Supabase client access. RLS still controls what rows can be used.
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on profiles, donors, campaigns, beneficiaries, donations, allocations, reports to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
 
 -- Allow RPC execution for anon and authenticated users.
 grant execute on function register_donor(text, text, text, text, text, int) to anon, authenticated;
