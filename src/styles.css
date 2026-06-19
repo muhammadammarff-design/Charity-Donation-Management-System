@@ -1,4 +1,4 @@
-/* Amanah Charity System - Vercel + Supabase UI */
+/* Amanah Charity System UI */
 :root {
   --page: #f6f3ec;
   --surface: #ffffff;
@@ -245,4 +245,29 @@ tr:last-child td { border-bottom: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Connection status states */
+.live-pill.bad {
+  background: var(--red-50);
+  color: var(--red);
+  border-color: #ffd4cf;
+}
+.live-pill.bad .dot {
+  background: var(--red);
+  box-shadow: 0 0 0 4px rgba(180,35,24,.12);
+}
+.live-pill.checking {
+  background: var(--amber-50);
+  color: #875a00;
+  border-color: #f6dc9d;
+}
+.live-pill.checking .dot {
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgba(183,121,31,.13);
+}
+
+@media (max-width: 1180px) and (min-width: 761px) {
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .priority-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

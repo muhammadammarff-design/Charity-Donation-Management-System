@@ -309,6 +309,67 @@ language sql stable security definer set search_path = public as $$
   order by a.date desc, a.created_at desc;
 $$;
 
+
+create or replace function public_campaigns()
+returns table(campaign_code text, title text, description text, target_amount numeric, collected_amount numeric, allocated_amount numeric, available_balance numeric, progress_percent numeric, status text)
+language sql stable security definer set search_path = public as $$
+  select c.campaign_code,
+         c.title,
+         c.description,
+         c.target_amount,
+         c.collected_amount,
+         c.allocated_amount,
+         (c.collected_amount - c.allocated_amount) as available_balance,
+         case when c.target_amount > 0 then round((c.collected_amount / c.target_amount) * 100, 2) else 0 end as progress_percent,
+         c.status
+  from campaigns c
+  where c.status = 'Active'
+  order by c.created_at desc;
+$$;
+
+create or replace function donor_make_donation(
+  p_donor_code text,
+  p_email text,
+  p_campaign_code text,
+  p_amount numeric,
+  p_payment_method text,
+  p_note text default ''
+) returns table(donation_code text)
+language plpgsql security definer set search_path = public as $$
+declare
+  v_donor_id uuid;
+  v_campaign_id uuid;
+begin
+  if p_amount is null or p_amount <= 0 then
+    raise exception 'Donation amount must be greater than zero.';
+  end if;
+  if length(trim(coalesce(p_payment_method, ''))) < 2 then
+    raise exception 'Payment method is required.';
+  end if;
+
+  select id into v_donor_id
+  from donors
+  where donor_code = upper(trim(p_donor_code)) and lower(email) = lower(trim(p_email));
+
+  if v_donor_id is null then
+    raise exception 'Donor verification failed.';
+  end if;
+
+  select id into v_campaign_id
+  from campaigns
+  where campaign_code = upper(trim(p_campaign_code)) and status = 'Active';
+
+  if v_campaign_id is null then
+    raise exception 'Active campaign not found.';
+  end if;
+
+  return query
+  insert into donations(donor_id, campaign_id, amount, date, payment_method, note)
+  values(v_donor_id, v_campaign_id, p_amount, current_date, trim(p_payment_method), coalesce(p_note, ''))
+  returning donations.donation_code;
+end;
+$$;
+
 create or replace function generate_monthly_report(p_month text)
 returns table(report_code text)
 language plpgsql security definer set search_path = public as $$
@@ -367,6 +428,8 @@ grant execute on function donor_statement(text, text) to anon, authenticated;
 grant execute on function donor_donations(text, text) to anon, authenticated;
 grant execute on function donor_campaigns(text, text) to anon, authenticated;
 grant execute on function donor_allocations(text, text) to anon, authenticated;
+grant execute on function public_campaigns() to anon, authenticated;
+grant execute on function donor_make_donation(text, text, text, numeric, text, text) to anon, authenticated;
 grant execute on function generate_monthly_report(text) to authenticated;
 
 -- Seed demo data

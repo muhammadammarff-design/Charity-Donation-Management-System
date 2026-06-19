@@ -43,6 +43,7 @@ Supabase stores live dynamic data. GitHub stores source code.
 - Donor registration
 - System-generated Donor ID, e.g. `DNR001`
 - Donor login using Donor ID + email
+- Donor can submit a donation record to an active campaign
 - Donation statement
 - Donation history
 - Campaign impact view

@@ -4,9 +4,13 @@ import './styles.css';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const app = document.querySelector('#app');
+const APP_VERSION = 'v2.2.0-supabase-final';
 
 let supabase = null;
 let state = {
+  connectionStatus: (!SUPABASE_URL || !SUPABASE_ANON_KEY) ? 'disconnected' : 'checking',
+  connectionMessage: '',
+  publicCampaigns: [],
   role: null,
   tab: 'donor',
   adminUser: null,
@@ -58,7 +62,7 @@ function setupScreen() {
       ${brandStrip()}
       <div class="login-card setup-card">
         <h2>Supabase connection required</h2>
-        <p class="subtitle">Add these environment variables in Vercel project settings, then redeploy:</p>
+        <p class="subtitle">Supabase environment variables are missing. Add these in Vercel project settings, then redeploy:</p>
         <div class="hint-box">
           <code>VITE_SUPABASE_URL</code><br />
           <code>VITE_SUPABASE_ANON_KEY</code>
@@ -69,22 +73,46 @@ function setupScreen() {
 }
 
 function brandStrip() {
+  const statusMap = {
+    connected: ['Connected to Supabase', 'ok'],
+    checking: ['Checking Supabase...', 'checking'],
+    error: ['Supabase connection error', 'bad'],
+    disconnected: ['Supabase not connected', 'bad'],
+  };
+  const [label, tone] = statusMap[state.connectionStatus] || statusMap.checking;
+  const title = state.connectionMessage ? ` title="${escapeHtml(state.connectionMessage)}"` : '';
   return `
     <header class="top-strip">
       <div class="brand">
         <div class="brand-logo">♡</div>
-        <div><h1>Amanah Charity System</h1><p>Vercel + Supabase dashboard · C++ OOP source included</p></div>
+        <div><h1>Amanah Charity System</h1><p>Donation transparency dashboard</p></div>
       </div>
-      <div class="live-pill"><span class="dot"></span> Live Supabase project</div>
+      <div class="live-pill ${tone}"${title}><span class="dot"></span> ${label} · ${APP_VERSION}</div>
     </header>`;
+}
+
+
+async function checkSupabaseConnection() {
+  try {
+    const { error } = await supabase.rpc('verify_donor', { p_donor_code: 'DNR000', p_email: 'connection-check@example.com' });
+    if (error) throw error;
+    state.connectionStatus = 'connected';
+    state.connectionMessage = 'Connected to Supabase and required RPC functions are available.';
+  } catch (error) {
+    state.connectionStatus = 'error';
+    state.connectionMessage = error?.message || 'Unable to verify Supabase connection.';
+  }
 }
 
 async function init() {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    state.connectionStatus = 'disconnected';
+    state.connectionMessage = 'Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY.';
     setupScreen();
     return;
   }
   supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  await checkSupabaseConnection();
   const { data } = await supabase.auth.getSession();
   if (data.session?.user) {
     const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.session.user.id).maybeSingle();
@@ -117,7 +145,7 @@ function renderLogin() {
           ${state.tab === 'donor' ? donorLoginHtml() : ''}
           ${state.tab === 'register' ? donorRegisterHtml() : ''}
           ${state.tab === 'admin' ? adminLoginHtml() : ''}
-          <div class="security-note">Data is saved in Supabase PostgreSQL. C++ OOP source remains in the GitHub repository for viva/report.</div>
+          <div class="security-note">Use donor access for read-only donor pages. Use admin access to manage campaigns, donations, allocations, and reports.</div>
         </div>
       </section>
     </div>`;
@@ -165,9 +193,21 @@ function adminLoginHtml() {
       <p>Open dashboard, campaigns, reports, donations, and allocations.</p>
       <div class="field"><label>Email <span>Supabase Auth</span></label><input name="email" type="email" value="admin@example.com" required /></div>
       <div class="field"><label>Password <span>Required</span></label><input name="password" type="password" value="admin123456" required /></div>
-      <div class="hint-box">Create this user in Supabase Auth, then insert admin profile as explained in <code>SUPABASE_SETUP.md</code>.</div>
+      <div class="hint-box">Use the admin email and password configured in Supabase Auth.</div>
       <div class="button-row"><button class="btn primary" type="submit">Login as admin</button></div>
     </form>`;
+}
+
+
+async function loadPublicCampaigns() {
+  const { data, error } = await supabase.rpc('public_campaigns');
+  if (error) {
+    state.publicCampaigns = [];
+    toast(error.message, 'error');
+    return [];
+  }
+  state.publicCampaigns = data || [];
+  return state.publicCampaigns;
 }
 
 async function handleDonorLogin(event) {
@@ -183,6 +223,7 @@ async function handleDonorLogin(event) {
   state.role = 'donor';
   state.donor = { donor_code, email, name: data[0].donor_name };
   state.page = 'donor-statement';
+  await loadPublicCampaigns();
   render();
 }
 
@@ -207,6 +248,7 @@ async function handleDonorRegister(event) {
   state.role = 'donor';
   state.donor = { donor_code, email: payload.p_email, name: payload.p_name };
   state.page = 'donor-statement';
+  await loadPublicCampaigns();
   render();
 }
 
@@ -283,6 +325,7 @@ function sideNav() {
       <div class="role-card"><strong>Donor Portal</strong><span>Read-only verified donor pages.</span></div>
       <div class="nav-title">Navigation</div>
       ${navButton('donor-statement', 'My Statement')}
+      ${navButton('donor-donate', 'Make Donation')}
       ${navButton('donor-impact', 'Campaign Impact')}
       <button class="btn danger logout" data-action="logout">Logout</button>
     </aside>`;
@@ -299,6 +342,7 @@ function mainPage() {
     return dashboardPage();
   }
   if (state.page === 'donor-impact') return donorImpactPage();
+  if (state.page === 'donor-donate') return donorDonatePage();
   return donorStatementPage();
 }
 
@@ -393,6 +437,30 @@ function donorImpactPlaceholder(campaigns, allocations) {
     <section class="panel-card"><div class="panel-title"><div><h3>Allocation evidence</h3><p>Beneficiary contact information is hidden from donor view.</p></div></div><div class="table-wrap"><table><thead><tr><th>Campaign</th><th>Beneficiary</th><th>Date</th><th>Purpose</th><th>Amount</th></tr></thead><tbody>${allocations.length ? allocations.map((a) => `<tr><td>${escapeHtml(a.campaign_title)}</td><td>${escapeHtml(a.beneficiary_name)}</td><td>${a.date}</td><td>${escapeHtml(a.purpose)}</td><td>${moneyFull(a.amount)}</td></tr>`).join('') : '<tr><td colspan="5">No allocation evidence available yet.</td></tr>'}</tbody></table></div></section>`;
 }
 
+
+function donorDonatePagePlaceholder(campaigns) {
+  const options = campaigns.length
+    ? campaigns.map((c) => `<option value="${c.campaign_code}">${c.campaign_code} - ${escapeHtml(c.title)}</option>`).join('')
+    : '<option value="">No active campaigns</option>';
+  return `
+    ${pageHead('Donor portal', 'Make a donation.', 'Select an active campaign and submit a donation record. This prototype records the donation in Supabase; it does not process real online payments.')}
+    <section class="panel-card">
+      <div class="panel-title"><div><h3>Donation form</h3><p>Your Donor ID and email are verified before the donation is saved.</p></div><span class="chip blue">Verified donor</span></div>
+      <form id="donor-donation-form">
+        <div class="form-grid">
+          <div class="field"><label>Donor ID</label><input name="donor_code" value="${escapeHtml(state.donor?.donor_code || '')}" readonly /></div>
+          <div class="field"><label>Email</label><input name="email" value="${escapeHtml(state.donor?.email || '')}" readonly /></div>
+          <div class="field full-span"><label>Campaign</label><select name="campaign_code" required>${options}</select></div>
+          <div class="field"><label>Amount</label><input name="amount" type="number" min="1" value="5000" required /></div>
+          <div class="field"><label>Payment method</label><select name="payment_method"><option>Cash</option><option>Bank Transfer</option><option>Cheque</option><option>JazzCash</option><option>EasyPaisa</option></select></div>
+          <div class="field full-span"><label>Note</label><input name="note" value="Donor submitted donation" /></div>
+        </div>
+        <div class="button-row"><button class="btn primary" type="submit">Submit donation</button></div>
+      </form>
+      <div class="security-note">For this academic prototype, donation submission records the donation in the database. Real payment gateway integration can be added in a production version.</div>
+    </section>`;
+}
+
 function donorShell(content) {
   return content;
 }
@@ -440,12 +508,17 @@ function bindEvents() {
   if (allocation) allocation.addEventListener('submit', submitAllocation);
   const campaign = document.querySelector('#campaign-form');
   if (campaign) campaign.addEventListener('submit', submitCampaign);
+  const donorDonation = document.querySelector('#donor-donation-form');
+  if (donorDonation) donorDonation.addEventListener('submit', submitDonorDonation);
 }
 
 async function renderDonorAsync() {
   app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack"><section class="panel-card">Loading...</section></main></section></div>`;
   const params = { p_donor_code: state.donor.donor_code, p_email: state.donor.email };
-  if (state.page === 'donor-impact') {
+  if (state.page === 'donor-donate') {
+    const campaigns = await loadPublicCampaigns();
+    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorDonatePagePlaceholder(campaigns)}</main></section></div>`;
+  } else if (state.page === 'donor-impact') {
     const [campaigns, allocations] = await Promise.all([
       supabase.rpc('donor_campaigns', params),
       supabase.rpc('donor_allocations', params),
@@ -459,6 +532,26 @@ async function renderDonorAsync() {
     app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorStatementPlaceholder((statement.data || [])[0] || {}, donations.data || [])}</main></section></div>`;
   }
   bindEvents();
+}
+
+
+async function submitDonorDonation(event) {
+  event.preventDefault();
+  const form = new FormData(event.currentTarget);
+  const payload = {
+    p_donor_code: String(form.get('donor_code')).trim().toUpperCase(),
+    p_email: String(form.get('email')).trim().toLowerCase(),
+    p_campaign_code: String(form.get('campaign_code')).trim().toUpperCase(),
+    p_amount: Number(form.get('amount')),
+    p_payment_method: String(form.get('payment_method')).trim(),
+    p_note: String(form.get('note')).trim(),
+  };
+  const { data, error } = await supabase.rpc('donor_make_donation', payload);
+  if (error) return toast(error.message, 'error');
+  const code = data?.[0]?.donation_code;
+  toast(`Donation submitted${code ? ` (${code})` : ''}.`);
+  state.page = 'donor-statement';
+  await renderDonorAsync();
 }
 
 async function submitDonation(event) {
@@ -529,7 +622,7 @@ async function generateReport() {
 
 async function handleLogout() {
   await supabase.auth.signOut();
-  state = { role: null, tab: 'donor', adminUser: null, donor: null, page: 'dashboard', modal: null, filterActive: false, data: { donors: [], campaigns: [], beneficiaries: [], donations: [], allocations: [], reports: [] } };
+  state = { connectionStatus: state.connectionStatus, connectionMessage: state.connectionMessage, publicCampaigns: [], role: null, tab: 'donor', adminUser: null, donor: null, page: 'dashboard', modal: null, filterActive: false, data: { donors: [], campaigns: [], beneficiaries: [], donations: [], allocations: [], reports: [] } };
   renderLogin();
 }
 
