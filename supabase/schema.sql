@@ -299,14 +299,17 @@ $$;
 create or replace function donor_allocations(p_donor_code text, p_email text)
 returns table(campaign_title text, beneficiary_name text, date date, purpose text, amount numeric)
 language sql stable security definer set search_path = public as $$
-  select c.title, b.name, a.date, a.purpose, a.amount
-  from donors d
-  join donations dn on dn.donor_id = d.id
-  join campaigns c on c.id = dn.campaign_id
-  join allocations a on a.campaign_id = c.id
-  join beneficiaries b on b.id = a.beneficiary_id
-  where d.donor_code = upper(trim(p_donor_code)) and lower(d.email) = lower(trim(p_email))
-  order by a.date desc, a.created_at desc;
+  select x.campaign_title, x.beneficiary_name, x.date, x.purpose, x.amount
+  from (
+    select distinct c.title as campaign_title, b.name as beneficiary_name, a.date, a.purpose, a.amount, a.created_at
+    from donors d
+    join donations dn on dn.donor_id = d.id
+    join campaigns c on c.id = dn.campaign_id
+    join allocations a on a.campaign_id = c.id
+    join beneficiaries b on b.id = a.beneficiary_id
+    where d.donor_code = upper(trim(p_donor_code)) and lower(d.email) = lower(trim(p_email))
+  ) x
+  order by x.date desc, x.created_at desc;
 $$;
 
 

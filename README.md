@@ -17,7 +17,7 @@ This project solves a real charity transparency problem: donors, campaigns, bene
 The repository contains two important parts:
 
 1. **C++ OOP Core** in `cpp_core/`  
-   Used for viva and OOP evaluation: classes, inheritance, polymorphism, constructors, operator overloading, file handling, validation, reports.
+   Used for OOP evaluation: classes, inheritance, polymorphism, constructors, operator overloading, file handling, validation, reports.
 
 2. **Web Dashboard** using **Vercel + Supabase**  
    Used as the polished hosted interface with real cloud data persistence.
@@ -30,7 +30,7 @@ Streamlit had HTML/CSS rendering issues for a custom dashboard. The final hosted
 
 - **Vercel** for frontend hosting
 - **Supabase PostgreSQL** for database, auth, and APIs
-- **C++ source code** preserved for OOP viva and report
+- **C++ source code** preserved for the OOP report and project assessment
 
 Supabase stores live dynamic data. GitHub stores source code.
 

@@ -2,7 +2,7 @@
 
 This version uses **Vercel for the frontend** and **Supabase PostgreSQL for live data**.
 
-The C++ OOP source code is still included in `cpp_core/` for viva, report, and OOP evaluation. The hosted dashboard uses Supabase because it gives reliable cloud persistence and avoids Streamlit HTML rendering issues.
+The C++ OOP source code is still included in `cpp_core/` for the report and OOP evaluation. The hosted dashboard uses Supabase because it gives reliable cloud persistence and avoids Streamlit HTML rendering issues.
 
 ---
 

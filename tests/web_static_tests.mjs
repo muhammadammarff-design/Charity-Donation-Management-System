@@ -29,6 +29,10 @@ for (const required of [
   'donor-donation-form',
   'handleDonorRegister',
   'handleAdminLogin',
+  'reportCards',
+  'donationCards',
+  'allocationCards',
+  'currentMonth',
 ]) {
   assert(main.includes(required), `Missing frontend feature: ${required}`);
 }
@@ -50,8 +54,21 @@ for (const required of [
   'grid-template-columns: 1fr',
   'overflow-x: auto',
   'prefers-reduced-motion',
+  'mobile-card-list',
+  'desktop-table',
+  'white-space: normal',
 ]) {
   assert(css.includes(required), `Missing responsive/accessibility CSS: ${required}`);
+}
+
+
+
+for (const removed of [
+  'mobile-logout-bar',
+  'desktop-logout',
+  'Transparency reports for submission and viva',
+]) {
+  assert(!main.includes(removed), `Removed responsive/report text still present in main.js: ${removed}`);
 }
 
 console.log('Web static crash tests passed.');

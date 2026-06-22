@@ -4,7 +4,7 @@ import './styles.css';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const app = document.querySelector('#app');
-const APP_VERSION = 'v2.2.0-supabase-final';
+const APP_VERSION = 'v2.3.0-responsive-final';
 
 let supabase = null;
 let state = {
@@ -299,7 +299,6 @@ function render() {
         ${sideNav()}
         <main class="page-stack">${mainPage()}</main>
       </section>
-      <div class="mobile-logout-bar"><button class="btn danger full" data-action="logout">Logout</button></div>
       ${modalHtml()}
     </div>`;
   bindEvents();
@@ -314,7 +313,7 @@ function sideNav() {
         ${navButton('dashboard', 'Dashboard')}
         ${navButton('campaigns', 'Campaigns')}
         ${navButton('reports', 'Reports')}
-        <button class="btn danger logout desktop-logout" data-action="logout">Logout</button>
+        <button class="btn danger logout nav-logout" data-action="logout">Logout</button>
       </aside>`;
   }
   return `
@@ -324,7 +323,7 @@ function sideNav() {
       ${navButton('donor-statement', 'My Statement')}
       ${navButton('donor-donate', 'Make Donation')}
       ${navButton('donor-impact', 'Campaign Impact')}
-      <button class="btn danger logout desktop-logout" data-action="logout">Logout</button>
+      <button class="btn danger logout nav-logout" data-action="logout">Logout</button>
     </aside>`;
 }
 
@@ -386,15 +385,42 @@ function campaignsPage() {
 
 function reportsPage() {
   const s = summary();
+  const reports = [...state.data.reports].sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')));
+  const actions = '<button class="btn primary" data-action="generate-report">Generate monthly report</button><button class="btn" data-action="print-report">Export PDF</button>';
   return `
-    ${pageHead('Reports', 'Monthly financial summary with donation and allocation records.', 'Generate monthly reports and use browser print/save as PDF.')}
+    ${pageHead('Reports', 'Transparency reports for project submission.', 'A simple monthly summary of donations, allocations, and remaining balance. Use export only when a printable copy is required.', actions)}
     ${metricGrid([
-      ['Current donations', money(s.totalDonations), 'Report period uses current saved data.'],
-      ['Current allocations', money(s.totalAllocations), 'Aid distributed to beneficiaries.'],
-      ['Current balance', money(s.balance), 'Remaining balance after allocation.'],
+      ['Current donations', money(s.totalDonations), 'Total amount received in the saved records.'],
+      ['Current allocations', money(s.totalAllocations), 'Total amount distributed to beneficiaries.'],
+      ['Current balance', money(s.balance), 'Amount still available after allocations.'],
     ])}
-    <section class="panel-card"><div class="panel-title"><div><h3>Generated reports</h3><p>Clear table for screenshots and report evidence.</p></div><span class="chip">${state.data.reports.length} reports</span></div><div class="table-wrap"><table><thead><tr><th>Report ID</th><th>Type</th><th>Period</th><th>Donations</th><th>Allocations</th><th>Balance</th><th>Status</th></tr></thead><tbody>${state.data.reports.map((r) => `<tr><td>${r.report_code}</td><td>${r.report_type}</td><td>${escapeHtml(r.period)}</td><td>${money(r.total_donations)}</td><td>${money(r.total_allocations)}</td><td>${money(r.remaining_balance)}</td><td><span class="status">Ready</span></td></tr>`).join('')}</tbody></table></div>
-    <div class="button-row" style="margin-top:24px"><button class="btn primary" data-action="generate-report">Generate monthly report</button><button class="btn" data-action="print-report">Export PDF</button></div></section>`;
+    <section class="panel-card report-panel">
+      <div class="panel-title"><div><h3>Generated reports</h3><p>Recent reports are shown as mobile cards and as a full table on larger screens.</p></div><span class="chip">${reports.length} reports</span></div>
+      <div class="mobile-card-list report-card-list">${reportCards(reports)}</div>
+      <div class="table-wrap desktop-table"><table><thead><tr><th>Report ID</th><th>Type</th><th>Period</th><th>Donations</th><th>Allocations</th><th>Balance</th><th>Status</th></tr></thead><tbody>${reportRows(reports)}</tbody></table></div>
+    </section>`;
+}
+
+function reportRows(reports) {
+  if (!reports.length) return '<tr><td colspan="7">No reports generated yet.</td></tr>';
+  return reports.map((r) => `<tr><td>${escapeHtml(r.report_code)}</td><td>${escapeHtml(r.report_type)}</td><td>${escapeHtml(r.period)}</td><td>${money(r.total_donations)}</td><td>${money(r.total_allocations)}</td><td>${money(r.remaining_balance)}</td><td><span class="status">Ready</span></td></tr>`).join('');
+}
+
+function mobileInfoRow(label, value) {
+  return `<div class="mobile-info-row"><span>${label}</span><strong>${value}</strong></div>`;
+}
+
+function reportCards(reports) {
+  if (!reports.length) return '<p class="security-note">No reports generated yet. Tap Generate monthly report to create one.</p>';
+  return reports.map((r) => `
+    <article class="mobile-info-card report-card">
+      <div class="mobile-info-head"><h4>${escapeHtml(r.report_code)}</h4><span class="status">Ready</span></div>
+      ${mobileInfoRow('Type', escapeHtml(r.report_type))}
+      ${mobileInfoRow('Period', escapeHtml(r.period))}
+      ${mobileInfoRow('Donations', moneyFull(r.total_donations))}
+      ${mobileInfoRow('Allocations', moneyFull(r.total_allocations))}
+      ${mobileInfoRow('Balance', moneyFull(r.remaining_balance))}
+    </article>`).join('');
 }
 
 function campaignRows(campaigns) {
@@ -422,17 +448,62 @@ async function donorStatementPage() {
 }
 
 function donorStatementPlaceholder(statement, donations) {
+  const safeStatement = {
+    donor_name: statement.donor_name || state.donor?.name || 'Verified donor',
+    email: statement.email || state.donor?.email || '',
+    total_donated: statement.total_donated || 0,
+    donation_count: statement.donation_count || 0,
+    campaigns_supported: statement.campaigns_supported || 0,
+  };
   return `
-    ${pageHead('Donor portal', 'My donation statement.', 'Read-only view. Donors see their own records, not admin CRUD tools.')}
-    <div class="statement-grid"><div class="statement-card"><h3>${escapeHtml(statement.donor_name)}</h3><p>Verified donor · Email protected: <strong>${maskEmail(statement.email)}</strong></p><div class="statement-metrics"><div class="statement-metric"><span>Total donated</span><strong>${money(statement.total_donated)}</strong></div><div class="statement-metric"><span>Donations</span><strong>${statement.donation_count}</strong></div><div class="statement-metric"><span>Campaigns</span><strong>${statement.campaigns_supported}</strong></div></div></div></div>
-    <section class="panel-card"><div class="panel-title"><div><h3>Donation history</h3><p>Only this donor's records are shown.</p></div></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Campaign</th><th>Method</th><th>Amount</th></tr></thead><tbody>${donations.length ? donations.map((d) => `<tr><td>${d.date}</td><td>${escapeHtml(d.campaign_title)}</td><td>${escapeHtml(d.payment_method)}</td><td>${moneyFull(d.amount)}</td></tr>`).join('') : '<tr><td colspan="4">No donations recorded yet.</td></tr>'}</tbody></table></div></section>`;
+    ${pageHead('Donor portal', 'My donation statement.', 'Read-only view. Donors see their own records, not admin management tools.')}
+    <div class="statement-grid">
+      <div class="statement-card">
+        <h3>${escapeHtml(safeStatement.donor_name)}</h3>
+        <p>Verified donor · Email protected: <strong>${maskEmail(safeStatement.email)}</strong></p>
+        <div class="statement-metrics">
+          <div class="statement-metric"><span>Total donated</span><strong>${money(safeStatement.total_donated)}</strong></div>
+          <div class="statement-metric"><span>Donations</span><strong>${safeStatement.donation_count}</strong></div>
+          <div class="statement-metric"><span>Campaigns</span><strong>${safeStatement.campaigns_supported}</strong></div>
+        </div>
+      </div>
+    </div>
+    <section class="panel-card">
+      <div class="panel-title"><div><h3>Donation history</h3><p>Only this donor's records are shown.</p></div></div>
+      <div class="mobile-card-list donation-card-list">${donationCards(donations)}</div>
+      <div class="table-wrap desktop-table"><table><thead><tr><th>Date</th><th>Campaign</th><th>Method</th><th>Amount</th></tr></thead><tbody>${donations.length ? donations.map((d) => `<tr><td>${d.date}</td><td>${escapeHtml(d.campaign_title)}</td><td>${escapeHtml(d.payment_method)}</td><td>${moneyFull(d.amount)}</td></tr>`).join('') : '<tr><td colspan="4">No donations recorded yet.</td></tr>'}</tbody></table></div>
+    </section>`;
+}
+
+function donationCards(donations) {
+  if (!donations.length) return '<p class="security-note">No donations recorded yet.</p>';
+  return donations.map((d) => `
+    <article class="mobile-info-card donation-card">
+      <div class="mobile-info-head"><h4>${escapeHtml(d.campaign_title)}</h4><strong>${moneyFull(d.amount)}</strong></div>
+      ${mobileInfoRow('Date', escapeHtml(d.date))}
+      ${mobileInfoRow('Method', escapeHtml(d.payment_method))}
+    </article>`).join('');
 }
 
 function donorImpactPlaceholder(campaigns, allocations) {
   return `
-    ${pageHead('Campaign impact', 'Where supported campaign funds went.', 'Donors see campaign-level allocation transparency without private contact information.')}
+    ${pageHead('Campaign impact', 'Where supported campaign funds went.', 'Donors can see campaign-level allocation transparency without private contact information.')}
     <section class="panel-card"><div class="panel-title"><div><h3>Supported campaigns</h3><p>Campaigns connected to this donor donation history.</p></div><span class="chip blue">${campaigns.length} supported</span></div><div class="campaign-list">${campaignRows(campaigns.map((c) => ({ ...c, target_amount: c.target_amount, collected_amount: c.collected_amount, allocated_amount: c.allocated_amount, status: c.status })))}</div></section>
-    <section class="panel-card"><div class="panel-title"><div><h3>Allocation evidence</h3><p>Beneficiary contact information is hidden from donor view.</p></div></div><div class="table-wrap"><table><thead><tr><th>Campaign</th><th>Beneficiary</th><th>Date</th><th>Purpose</th><th>Amount</th></tr></thead><tbody>${allocations.length ? allocations.map((a) => `<tr><td>${escapeHtml(a.campaign_title)}</td><td>${escapeHtml(a.beneficiary_name)}</td><td>${a.date}</td><td>${escapeHtml(a.purpose)}</td><td>${moneyFull(a.amount)}</td></tr>`).join('') : '<tr><td colspan="5">No allocation evidence available yet.</td></tr>'}</tbody></table></div></section>`;
+    <section class="panel-card"><div class="panel-title"><div><h3>Allocation evidence</h3><p>Beneficiary contact information is hidden from donor view.</p></div></div>
+      <div class="mobile-card-list allocation-card-list">${allocationCards(allocations)}</div>
+      <div class="table-wrap desktop-table"><table><thead><tr><th>Campaign</th><th>Beneficiary</th><th>Date</th><th>Purpose</th><th>Amount</th></tr></thead><tbody>${allocations.length ? allocations.map((a) => `<tr><td>${escapeHtml(a.campaign_title)}</td><td>${escapeHtml(a.beneficiary_name)}</td><td>${a.date}</td><td>${escapeHtml(a.purpose)}</td><td>${moneyFull(a.amount)}</td></tr>`).join('') : '<tr><td colspan="5">No allocation evidence available yet.</td></tr>'}</tbody></table></div>
+    </section>`;
+}
+
+function allocationCards(allocations) {
+  if (!allocations.length) return '<p class="security-note">No allocation evidence available yet.</p>';
+  return allocations.map((a) => `
+    <article class="mobile-info-card allocation-card">
+      <div class="mobile-info-head"><h4>${escapeHtml(a.campaign_title)}</h4><strong>${moneyFull(a.amount)}</strong></div>
+      ${mobileInfoRow('Beneficiary', escapeHtml(a.beneficiary_name))}
+      ${mobileInfoRow('Date', escapeHtml(a.date))}
+      ${mobileInfoRow('Purpose', escapeHtml(a.purpose))}
+    </article>`).join('');
 }
 
 
@@ -492,8 +563,7 @@ function bindEvents() {
   }));
   document.querySelectorAll('[data-modal]').forEach((btn) => btn.addEventListener('click', () => { state.modal = btn.dataset.modal; render(); }));
   document.querySelectorAll('[data-action="close-modal"]').forEach((btn) => btn.addEventListener('click', () => { state.modal = null; render(); }));
-  const logout = document.querySelector('[data-action="logout"]');
-  if (logout) logout.addEventListener('click', handleLogout);
+  document.querySelectorAll('[data-action="logout"]').forEach((btn) => btn.addEventListener('click', handleLogout));
   const toggle = document.querySelector('[data-action="toggle-active"]');
   if (toggle) toggle.addEventListener('click', () => { state.filterActive = !state.filterActive; render(); });
   const gen = document.querySelector('[data-action="generate-report"]');
@@ -515,19 +585,19 @@ async function renderDonorAsync() {
   const params = { p_donor_code: state.donor.donor_code, p_email: state.donor.email };
   if (state.page === 'donor-donate') {
     const campaigns = await loadPublicCampaigns();
-    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorDonatePagePlaceholder(campaigns)}</main></section><div class="mobile-logout-bar"><button class="btn danger full" data-action="logout">Logout</button></div></div>`;
+    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorDonatePagePlaceholder(campaigns)}</main></section></div>`;
   } else if (state.page === 'donor-impact') {
     const [campaigns, allocations] = await Promise.all([
       supabase.rpc('donor_campaigns', params),
       supabase.rpc('donor_allocations', params),
     ]);
-    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorImpactPlaceholder(campaigns.data || [], allocations.data || [])}</main></section><div class="mobile-logout-bar"><button class="btn danger full" data-action="logout">Logout</button></div></div>`;
+    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorImpactPlaceholder(campaigns.data || [], allocations.data || [])}</main></section></div>`;
   } else {
     const [statement, donations] = await Promise.all([
       supabase.rpc('donor_statement', params),
       supabase.rpc('donor_donations', params),
     ]);
-    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorStatementPlaceholder((statement.data || [])[0] || {}, donations.data || [])}</main></section><div class="mobile-logout-bar"><button class="btn danger full" data-action="logout">Logout</button></div></div>`;
+    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorStatementPlaceholder((statement.data || [])[0] || {}, donations.data || [])}</main></section></div>`;
   }
   bindEvents();
 }
@@ -610,8 +680,13 @@ async function submitCampaign(event) {
   render();
 }
 
+function currentMonth() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
 async function generateReport() {
-  const { error } = await supabase.rpc('generate_monthly_report', { p_month: '2026-06' });
+  const { error } = await supabase.rpc('generate_monthly_report', { p_month: currentMonth() });
   if (error) return toast(error.message, 'error');
   toast('Monthly report generated.');
   await loadAdminData();
