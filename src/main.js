@@ -299,6 +299,7 @@ function render() {
         ${sideNav()}
         <main class="page-stack">${mainPage()}</main>
       </section>
+      <div class="mobile-logout-bar"><button class="btn danger full" data-action="logout">Logout</button></div>
       ${modalHtml()}
     </div>`;
   bindEvents();
@@ -313,7 +314,7 @@ function sideNav() {
         ${navButton('dashboard', 'Dashboard')}
         ${navButton('campaigns', 'Campaigns')}
         ${navButton('reports', 'Reports')}
-        <button class="btn danger logout" data-action="logout">Logout</button>
+        <button class="btn danger logout desktop-logout" data-action="logout">Logout</button>
       </aside>`;
   }
   return `
@@ -323,7 +324,7 @@ function sideNav() {
       ${navButton('donor-statement', 'My Statement')}
       ${navButton('donor-donate', 'Make Donation')}
       ${navButton('donor-impact', 'Campaign Impact')}
-      <button class="btn danger logout" data-action="logout">Logout</button>
+      <button class="btn danger logout desktop-logout" data-action="logout">Logout</button>
     </aside>`;
 }
 
@@ -386,7 +387,7 @@ function campaignsPage() {
 function reportsPage() {
   const s = summary();
   return `
-    ${pageHead('Reports', 'Transparency reports for submission and viva.', 'Generate monthly reports and use browser print/save as PDF.')}
+    ${pageHead('Reports', 'Monthly financial summary with donation and allocation records.', 'Generate monthly reports and use browser print/save as PDF.')}
     ${metricGrid([
       ['Current donations', money(s.totalDonations), 'Report period uses current saved data.'],
       ['Current allocations', money(s.totalAllocations), 'Aid distributed to beneficiaries.'],
@@ -514,19 +515,19 @@ async function renderDonorAsync() {
   const params = { p_donor_code: state.donor.donor_code, p_email: state.donor.email };
   if (state.page === 'donor-donate') {
     const campaigns = await loadPublicCampaigns();
-    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorDonatePagePlaceholder(campaigns)}</main></section></div>`;
+    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorDonatePagePlaceholder(campaigns)}</main></section><div class="mobile-logout-bar"><button class="btn danger full" data-action="logout">Logout</button></div></div>`;
   } else if (state.page === 'donor-impact') {
     const [campaigns, allocations] = await Promise.all([
       supabase.rpc('donor_campaigns', params),
       supabase.rpc('donor_allocations', params),
     ]);
-    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorImpactPlaceholder(campaigns.data || [], allocations.data || [])}</main></section></div>`;
+    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorImpactPlaceholder(campaigns.data || [], allocations.data || [])}</main></section><div class="mobile-logout-bar"><button class="btn danger full" data-action="logout">Logout</button></div></div>`;
   } else {
     const [statement, donations] = await Promise.all([
       supabase.rpc('donor_statement', params),
       supabase.rpc('donor_donations', params),
     ]);
-    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorStatementPlaceholder((statement.data || [])[0] || {}, donations.data || [])}</main></section></div>`;
+    app.innerHTML = `<div class="shell">${brandStrip()}<section class="app-layout">${sideNav()}<main class="page-stack">${donorStatementPlaceholder((statement.data || [])[0] || {}, donations.data || [])}</main></section><div class="mobile-logout-bar"><button class="btn danger full" data-action="logout">Logout</button></div></div>`;
   }
   bindEvents();
 }
