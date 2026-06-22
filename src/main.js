@@ -113,17 +113,9 @@ async function init() {
   }
   supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   await checkSupabaseConnection();
+  // Always show login page first. Admin logs in via the login form.
   const { data } = await supabase.auth.getSession();
   if (data.session?.user) {
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', data.session.user.id).maybeSingle();
-    if (profile?.role === 'admin') {
-      state.role = 'admin';
-      state.adminUser = data.session.user;
-      state.page = 'dashboard';
-      await loadAdminData();
-      render();
-      return;
-    }
     await supabase.auth.signOut();
   }
   renderLogin();
@@ -390,13 +382,14 @@ function campaignsPage() {
 function reportsPage() {
   const s = summary();
   return `
-    ${pageHead('Reports', 'Transparency reports for submission and viva.', 'Generate monthly reports and use browser print/save as PDF.', '<button class="btn primary" data-action="generate-report">Generate monthly report</button><button class="btn" data-action="print-report">Export PDF</button>')}
+    ${pageHead('Reports', 'Transparency reports for submission and viva.', 'Generate monthly reports and use browser print/save as PDF.')}
     ${metricGrid([
       ['Current donations', money(s.totalDonations), 'Report period uses current saved data.'],
       ['Current allocations', money(s.totalAllocations), 'Aid distributed to beneficiaries.'],
       ['Current balance', money(s.balance), 'Remaining balance after allocation.'],
     ])}
-    <section class="panel-card"><div class="panel-title"><div><h3>Generated reports</h3><p>Clear table for screenshots and report evidence.</p></div><span class="chip">${state.data.reports.length} reports</span></div><div class="table-wrap"><table><thead><tr><th>Report ID</th><th>Type</th><th>Period</th><th>Donations</th><th>Allocations</th><th>Balance</th><th>Status</th></tr></thead><tbody>${state.data.reports.map((r) => `<tr><td>${r.report_code}</td><td>${r.report_type}</td><td>${escapeHtml(r.period)}</td><td>${money(r.total_donations)}</td><td>${money(r.total_allocations)}</td><td>${money(r.remaining_balance)}</td><td><span class="status">Ready</span></td></tr>`).join('')}</tbody></table></div></section>`;
+    <section class="panel-card"><div class="panel-title"><div><h3>Generated reports</h3><p>Clear table for screenshots and report evidence.</p></div><span class="chip">${state.data.reports.length} reports</span></div><div class="table-wrap"><table><thead><tr><th>Report ID</th><th>Type</th><th>Period</th><th>Donations</th><th>Allocations</th><th>Balance</th><th>Status</th></tr></thead><tbody>${state.data.reports.map((r) => `<tr><td>${r.report_code}</td><td>${r.report_type}</td><td>${escapeHtml(r.period)}</td><td>${money(r.total_donations)}</td><td>${money(r.total_allocations)}</td><td>${money(r.remaining_balance)}</td><td><span class="status">Ready</span></td></tr>`).join('')}</tbody></table></div>
+    <div class="button-row" style="margin-top:24px"><button class="btn primary" data-action="generate-report">Generate monthly report</button><button class="btn" data-action="print-report">Export PDF</button></div></section>`;
 }
 
 function campaignRows(campaigns) {
