@@ -1057,6 +1057,7 @@ img, svg, video, canvas {
     min-height: 46px;
     font-size: 15px;
   }
+  .head-actions .btn, .button-row .btn { width: 100%; }
   .btn { min-height: 44px; font-size: 13px; padding: 0 14px; }
 
   .login-card { padding: 28px 22px; }
@@ -1119,7 +1120,8 @@ img, svg, video, canvas {
     align-items: stretch;
     gap: 6px;
   }
-  .head-actions .btn {
+  .head-actions .btn,
+  .button-row .btn {
     width: 100%;
     justify-content: center;
     min-height: 36px;

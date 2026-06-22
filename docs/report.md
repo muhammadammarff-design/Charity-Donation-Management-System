@@ -46,7 +46,8 @@ The project solves a real problem: small charities in Pakistan often manage dono
 13. [Challenges Faced](#13-challenges-faced)
 14. [Conclusion and Future Scope](#14-conclusion-and-future-scope)
     - [C++ Core vs Web Dashboard Comparison](#143-c-core-vs-web-dashboard--feature-comparison)
-15. [References](#15-references)
+15. [Live URLs](#15-live-urls)
+16. [References](#16-references)
 
 ---
 
@@ -586,13 +587,30 @@ If we continue working on this project, we would add:
 
 ---
 
-## 15. References
+
+## 15. Live URLs
+
+The project is deployed and accessible at the following URLs:
+
+| Resource | URL |
+|---|---|
+| **Live Web Dashboard** | [https://amanah-charity.vercel.app](https://amanah-charity.vercel.app) |
+| **GitHub Repository** | [https://github.com/your-username/Charity-Donation-Management-System](https://github.com/your-username/Charity-Donation-Management-System) |
+| **Demo Donor Login** | ID: DNR001 / Email: ahmed.khan@example.com |
+| **Demo Admin Login** | Email: admin@example.com / Password: admin123456 |
+
+> **Replace the URLs above with your actual Vercel deployment URL and GitHub repository URL before final submission.**
+
+---
+
+## 16. References
 
 1. C++ Reference. (2026). *cppreference.com*. https://en.cppreference.com/
 2. Supabase Documentation. (2026). *Supabase Docs*. https://supabase.com/docs
 3. Vite Documentation. (2026). *Vite Guide*. https://vitejs.dev/guide/
 4. Mermaid.js. (2026). *Mermaid Diagramming*. https://mermaid.js.org/
 5. Vercel Documentation. (2026). *Vercel Docs*. https://vercel.com/docs
+
 
 ---
 

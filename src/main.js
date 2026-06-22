@@ -105,18 +105,22 @@ async function checkSupabaseConnection() {
 }
 
 async function init() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    state.connectionStatus = 'disconnected';
-    state.connectionMessage = 'Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY.';
-    setupScreen();
-    return;
-  }
-  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  await checkSupabaseConnection();
-  // Always show login page first. Admin logs in via the login form.
-  const { data } = await supabase.auth.getSession();
-  if (data.session?.user) {
-    await supabase.auth.signOut();
+  try {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      state.connectionStatus = 'disconnected';
+      state.connectionMessage = 'Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY.';
+      setupScreen();
+      return;
+    }
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    await checkSupabaseConnection().catch(() => {});
+    // ALWAYS show login page first — never auto-login
+    const { data } = await supabase.auth.getSession().catch(() => ({ data: null }));
+    if (data?.session?.user) {
+      await supabase.auth.signOut().catch(() => {});
+    }
+  } catch (e) {
+    console.warn('Init warning (non-fatal):', e);
   }
   renderLogin();
 }
@@ -342,7 +346,7 @@ function pageHead(eyebrow, title, description, actions = '') {
   return `
     <div class="page-card page-head">
       <div><span class="eyebrow">${eyebrow}</span><h2>${title}</h2><p>${description}</p></div>
-      <div class="head-actions">${actions}</div>
+      ${actions ? `<div class="head-actions">${actions}</div>` : ''}
     </div>`;
 }
 
