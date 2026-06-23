@@ -3,21 +3,22 @@
 
 #include <sstream>
 
+using namespace std;
 Beneficiary::Beneficiary()
     : Person(), familySize(0), needType(""), campaignId(""), totalReceived(0.0) {}
 
-Beneficiary::Beneficiary(const std::string& id, const std::string& name, int age,
-                         const std::string& contact, const std::string& address,
-                         int familySize, const std::string& needType,
-                         const std::string& campaignId, double totalReceived)
+Beneficiary::Beneficiary(const string& id, const string& name, int age,
+                         const string& contact, const string& address,
+                         int familySize, const string& needType,
+                         const string& campaignId, double totalReceived)
     : Person(id, name, age, contact, address),
       familySize(familySize),
       needType(Validation::sanitizeField(needType)),
       campaignId(Validation::sanitizeField(campaignId)),
       totalReceived(totalReceived) {}
 
-Beneficiary::Beneficiary(const std::string& name, const std::string& needType,
-                         const std::string& campaignId)
+Beneficiary::Beneficiary(const string& name, const string& needType,
+                         const string& campaignId)
     : Person("", name, 0, "", ""),
       familySize(1),
       needType(Validation::sanitizeField(needType)),
@@ -25,18 +26,18 @@ Beneficiary::Beneficiary(const std::string& name, const std::string& needType,
       totalReceived(0.0) {}
 
 int Beneficiary::getFamilySize() const { return familySize; }
-std::string Beneficiary::getNeedType() const { return needType; }
-std::string Beneficiary::getCampaignId() const { return campaignId; }
+string Beneficiary::getNeedType() const { return needType; }
+string Beneficiary::getCampaignId() const { return campaignId; }
 double Beneficiary::getTotalReceived() const { return totalReceived; }
 
 void Beneficiary::setFamilySize(int familySize) { this->familySize = familySize; }
-void Beneficiary::setNeedType(const std::string& needType) { this->needType = Validation::sanitizeField(needType); }
-void Beneficiary::setCampaignId(const std::string& campaignId) { this->campaignId = Validation::sanitizeField(campaignId); }
+void Beneficiary::setNeedType(const string& needType) { this->needType = Validation::sanitizeField(needType); }
+void Beneficiary::setCampaignId(const string& campaignId) { this->campaignId = Validation::sanitizeField(campaignId); }
 void Beneficiary::setTotalReceived(double totalReceived) { this->totalReceived = totalReceived; }
 void Beneficiary::addReceivedAmount(double amount) { totalReceived += amount; }
 
-std::string Beneficiary::displayInfo() const {
-    std::ostringstream out;
+string Beneficiary::displayInfo() const {
+    ostringstream out;
     out << "Beneficiary => " << Person::displayInfo()
         << ", Family Size: " << familySize
         << ", Need: " << needType
@@ -45,8 +46,8 @@ std::string Beneficiary::displayInfo() const {
     return out.str();
 }
 
-std::string Beneficiary::serialize() const {
-    std::ostringstream out;
+string Beneficiary::serialize() const {
+    ostringstream out;
     out << Validation::sanitizeField(id) << '|'
         << Validation::sanitizeField(name) << '|'
         << age << '|'
@@ -59,8 +60,8 @@ std::string Beneficiary::serialize() const {
     return out.str();
 }
 
-Beneficiary Beneficiary::deserialize(const std::string& line) {
-    std::vector<std::string> p = Validation::split(line);
+Beneficiary Beneficiary::deserialize(const string& line) {
+    vector<string> p = Validation::split(line);
     if (p.size() < 9) {
         return Beneficiary();
     }
@@ -75,10 +76,10 @@ Beneficiary Beneficiary::deserialize(const std::string& line) {
     return Beneficiary(p[0], p[1], parsedAge, p[3], p[4], parsedFamilySize, p[6], p[7], parsedTotal);
 }
 
-std::string Beneficiary::header() {
+string Beneficiary::header() {
     return "id|name|age|contact|address|familySize|needType|campaignId|totalReceived";
 }
 
-std::string Beneficiary::row() const {
+string Beneficiary::row() const {
     return serialize();
 }

@@ -4,34 +4,36 @@
 #include <filesystem>
 #include <fstream>
 
-std::string FileManager::dataDirectory() {
-    const char* envDir = std::getenv("CHARITY_DATA_DIR");
-    if (envDir != nullptr && std::string(envDir).size() > 0) {
-        return std::string(envDir);
+using namespace std;
+
+string FileManager::dataDirectory() {
+    const char* envDir = getenv("CHARITY_DATA_DIR");
+    if (envDir != nullptr && string(envDir).size() > 0) {
+        return string(envDir);
     }
     return "data";
 }
 
-std::string FileManager::pathFor(const std::string& fileName) {
-    std::filesystem::path dir(dataDirectory());
+string FileManager::pathFor(const string& fileName) {
+    filesystem::path dir(dataDirectory());
     return (dir / fileName).string();
 }
 
 void FileManager::ensureDataDirectory() {
-    std::filesystem::create_directories(dataDirectory());
+    filesystem::create_directories(dataDirectory());
 }
 
-std::vector<std::string> FileManager::readLines(const std::string& fileName) {
+vector<string> FileManager::readLines(const string& fileName) {
     ensureDataDirectory();
-    std::vector<std::string> lines;
-    std::ifstream input(pathFor(fileName));
+    vector<string> lines;
+    ifstream input(pathFor(fileName));
 
     if (!input.is_open()) {
         return lines;
     }
 
-    std::string line;
-    while (std::getline(input, line)) {
+    string line;
+    while (getline(input, line)) {
         if (!line.empty()) {
             lines.push_back(line);
         }
@@ -40,23 +42,23 @@ std::vector<std::string> FileManager::readLines(const std::string& fileName) {
     return lines;
 }
 
-bool FileManager::writeLines(const std::string& fileName, const std::vector<std::string>& lines) {
+bool FileManager::writeLines(const string& fileName, const vector<string>& lines) {
     ensureDataDirectory();
-    std::ofstream output(pathFor(fileName), std::ios::trunc);
+    ofstream output(pathFor(fileName), ios::trunc);
 
     if (!output.is_open()) {
         return false;
     }
 
-    for (const std::string& line : lines) {
+    for (const string& line : lines) {
         output << line << '\n';
     }
 
     return true;
 }
 
-bool FileManager::clearFile(const std::string& fileName) {
+bool FileManager::clearFile(const string& fileName) {
     ensureDataDirectory();
-    std::ofstream output(pathFor(fileName), std::ios::trunc);
+    ofstream output(pathFor(fileName), ios::trunc);
     return output.is_open();
 }

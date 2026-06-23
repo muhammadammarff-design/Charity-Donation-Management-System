@@ -5,35 +5,37 @@
 
 #include <string>
 
+using namespace std;
+
 class Donor : public Person {
 private:
-    std::string email;
-    std::string donorType;
+    string email;
+    string donorType;
     double totalDonated;
 
 public:
     Donor();
-    Donor(const std::string& id, const std::string& name, int age,
-          const std::string& contact, const std::string& email,
-          const std::string& address, const std::string& donorType,
+    Donor(const string& id, const string& name, int age,
+          const string& contact, const string& email,
+          const string& address, const string& donorType,
           double totalDonated = 0.0);
-    Donor(const std::string& name, const std::string& contact,
-          const std::string& email);
+    Donor(const string& name, const string& contact,
+          const string& email);
 
-    std::string getEmail() const;
-    std::string getDonorType() const;
+    string getEmail() const;
+    string getDonorType() const;
     double getTotalDonated() const;
 
-    void setEmail(const std::string& email);
-    void setDonorType(const std::string& donorType);
+    void setEmail(const string& email);
+    void setDonorType(const string& donorType);
     void setTotalDonated(double totalDonated);
     void addDonationAmount(double amount);
 
-    std::string displayInfo() const override;
-    std::string serialize() const;
-    static Donor deserialize(const std::string& line);
-    static std::string header();
-    std::string row() const;
+    string displayInfo() const override;
+    string serialize() const;
+    static Donor deserialize(const string& line);
+    static string header();
+    string row() const;
 
     double operator+(const Donor& other) const;
     bool operator>(const Donor& other) const;

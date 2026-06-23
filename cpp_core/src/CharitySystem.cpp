@@ -7,9 +7,7 @@
 #include <iomanip>
 #include <sstream>
 
-using std::string;
-using std::vector;
-
+using namespace std;
 CharitySystem::CharitySystem() {
     loadAll();
 }
@@ -84,13 +82,13 @@ string CharitySystem::nextId(const string& prefix, const vector<string>& existin
         if (id.rfind(prefix, 0) == 0 && id.size() > prefix.size()) {
             int number = 0;
             if (Validation::safeToInt(id.substr(prefix.size()), number)) {
-                maxNumber = std::max(maxNumber, number);
+                maxNumber = max(maxNumber, number);
             }
         }
     }
 
-    std::ostringstream out;
-    out << prefix << std::setw(3) << std::setfill('0') << (maxNumber + 1);
+    ostringstream out;
+    out << prefix << setw(3) << setfill('0') << (maxNumber + 1);
     return out.str();
 }
 
@@ -529,10 +527,10 @@ SystemSummary CharitySystem::summary() const {
 }
 
 string CharitySystem::currentDate() const {
-    std::time_t now = std::time(nullptr);
-    std::tm* localTime = std::localtime(&now);
-    std::ostringstream out;
-    out << std::put_time(localTime, "%Y-%m-%d");
+    time_t now = time(nullptr);
+    tm* localTime = localtime(&now);
+    ostringstream out;
+    out << put_time(localTime, "%Y-%m-%d");
     return out.str();
 }
 

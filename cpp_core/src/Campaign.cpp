@@ -3,16 +3,17 @@
 
 #include <sstream>
 
+using namespace std;
 Campaign::Campaign()
     : id(""), title(""), description(""), targetAmount(0.0),
       collectedAmount(0.0), allocatedAmount(0.0), startDate(""), endDate(""),
       status("Active") {}
 
-Campaign::Campaign(const std::string& id, const std::string& title,
-                   const std::string& description, double targetAmount,
+Campaign::Campaign(const string& id, const string& title,
+                   const string& description, double targetAmount,
                    double collectedAmount, double allocatedAmount,
-                   const std::string& startDate, const std::string& endDate,
-                   const std::string& status)
+                   const string& startDate, const string& endDate,
+                   const string& status)
     : id(Validation::sanitizeField(id)),
       title(Validation::sanitizeField(title)),
       description(Validation::sanitizeField(description)),
@@ -23,30 +24,30 @@ Campaign::Campaign(const std::string& id, const std::string& title,
       endDate(Validation::sanitizeField(endDate)),
       status(Validation::sanitizeField(status)) {}
 
-Campaign::Campaign(const std::string& title, double targetAmount)
+Campaign::Campaign(const string& title, double targetAmount)
     : id(""), title(Validation::sanitizeField(title)), description(""),
       targetAmount(targetAmount), collectedAmount(0.0), allocatedAmount(0.0),
       startDate(""), endDate(""), status("Active") {}
 
-std::string Campaign::getId() const { return id; }
-std::string Campaign::getTitle() const { return title; }
-std::string Campaign::getDescription() const { return description; }
+string Campaign::getId() const { return id; }
+string Campaign::getTitle() const { return title; }
+string Campaign::getDescription() const { return description; }
 double Campaign::getTargetAmount() const { return targetAmount; }
 double Campaign::getCollectedAmount() const { return collectedAmount; }
 double Campaign::getAllocatedAmount() const { return allocatedAmount; }
-std::string Campaign::getStartDate() const { return startDate; }
-std::string Campaign::getEndDate() const { return endDate; }
-std::string Campaign::getStatus() const { return status; }
+string Campaign::getStartDate() const { return startDate; }
+string Campaign::getEndDate() const { return endDate; }
+string Campaign::getStatus() const { return status; }
 
-void Campaign::setId(const std::string& id) { this->id = Validation::sanitizeField(id); }
-void Campaign::setTitle(const std::string& title) { this->title = Validation::sanitizeField(title); }
-void Campaign::setDescription(const std::string& description) { this->description = Validation::sanitizeField(description); }
+void Campaign::setId(const string& id) { this->id = Validation::sanitizeField(id); }
+void Campaign::setTitle(const string& title) { this->title = Validation::sanitizeField(title); }
+void Campaign::setDescription(const string& description) { this->description = Validation::sanitizeField(description); }
 void Campaign::setTargetAmount(double targetAmount) { this->targetAmount = targetAmount; }
 void Campaign::setCollectedAmount(double collectedAmount) { this->collectedAmount = collectedAmount; }
 void Campaign::setAllocatedAmount(double allocatedAmount) { this->allocatedAmount = allocatedAmount; }
-void Campaign::setStartDate(const std::string& startDate) { this->startDate = Validation::sanitizeField(startDate); }
-void Campaign::setEndDate(const std::string& endDate) { this->endDate = Validation::sanitizeField(endDate); }
-void Campaign::setStatus(const std::string& status) { this->status = Validation::sanitizeField(status); }
+void Campaign::setStartDate(const string& startDate) { this->startDate = Validation::sanitizeField(startDate); }
+void Campaign::setEndDate(const string& endDate) { this->endDate = Validation::sanitizeField(endDate); }
+void Campaign::setStatus(const string& status) { this->status = Validation::sanitizeField(status); }
 void Campaign::addCollectedAmount(double amount) { collectedAmount += amount; }
 void Campaign::addAllocatedAmount(double amount) { allocatedAmount += amount; }
 
@@ -61,8 +62,8 @@ double Campaign::getProgressPercent() const {
     return (collectedAmount / targetAmount) * 100.0;
 }
 
-std::string Campaign::displayInfo() const {
-    std::ostringstream out;
+string Campaign::displayInfo() const {
+    ostringstream out;
     out << "Campaign => ID: " << id
         << ", Title: " << title
         << ", Target: " << Validation::toFixed2(targetAmount)
@@ -74,8 +75,8 @@ std::string Campaign::displayInfo() const {
     return out.str();
 }
 
-std::string Campaign::serialize() const {
-    std::ostringstream out;
+string Campaign::serialize() const {
+    ostringstream out;
     out << Validation::sanitizeField(id) << '|'
         << Validation::sanitizeField(title) << '|'
         << Validation::sanitizeField(description) << '|'
@@ -88,8 +89,8 @@ std::string Campaign::serialize() const {
     return out.str();
 }
 
-Campaign Campaign::deserialize(const std::string& line) {
-    std::vector<std::string> p = Validation::split(line);
+Campaign Campaign::deserialize(const string& line) {
+    vector<string> p = Validation::split(line);
     if (p.size() < 9) {
         return Campaign();
     }
@@ -102,12 +103,12 @@ Campaign Campaign::deserialize(const std::string& line) {
     return Campaign(p[0], p[1], p[2], target, collected, allocated, p[6], p[7], p[8]);
 }
 
-std::string Campaign::header() {
+string Campaign::header() {
     return "id|title|description|targetAmount|collectedAmount|allocatedAmount|availableBalance|progressPercent|startDate|endDate|status";
 }
 
-std::string Campaign::row() const {
-    std::ostringstream out;
+string Campaign::row() const {
+    ostringstream out;
     out << Validation::sanitizeField(id) << '|'
         << Validation::sanitizeField(title) << '|'
         << Validation::sanitizeField(description) << '|'

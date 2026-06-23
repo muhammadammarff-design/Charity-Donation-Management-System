@@ -3,33 +3,35 @@
 
 #include <string>
 
+using namespace std;
+
 class Person {
 protected:
-    std::string id;
-    std::string name;
+    string id;
+    string name;
     int age;
-    std::string contact;
-    std::string address;
+    string contact;
+    string address;
 
 public:
     Person();
-    Person(const std::string& id, const std::string& name, int age,
-           const std::string& contact, const std::string& address);
+    Person(const string& id, const string& name, int age,
+           const string& contact, const string& address);
     virtual ~Person();
 
-    std::string getId() const;
-    std::string getName() const;
+    string getId() const;
+    string getName() const;
     int getAge() const;
-    std::string getContact() const;
-    std::string getAddress() const;
+    string getContact() const;
+    string getAddress() const;
 
-    void setId(const std::string& id);
-    void setName(const std::string& name);
+    void setId(const string& id);
+    void setName(const string& name);
     void setAge(int age);
-    void setContact(const std::string& contact);
-    void setAddress(const std::string& address);
+    void setContact(const string& contact);
+    void setAddress(const string& address);
 
-    virtual std::string displayInfo() const;
+    virtual string displayInfo() const;
 };
 
 #endif

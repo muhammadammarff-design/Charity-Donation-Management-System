@@ -3,49 +3,51 @@
 
 #include <string>
 
+using namespace std;
+
 class Report {
 private:
-    std::string id;
-    std::string reportType;
-    std::string period;
+    string id;
+    string reportType;
+    string period;
     double totalDonations;
     double totalAllocations;
     double remainingBalance;
-    std::string generatedDate;
-    std::string remarks;
+    string generatedDate;
+    string remarks;
 
 public:
     Report();
-    Report(const std::string& id, const std::string& reportType,
-           const std::string& period, double totalDonations,
+    Report(const string& id, const string& reportType,
+           const string& period, double totalDonations,
            double totalAllocations, double remainingBalance,
-           const std::string& generatedDate, const std::string& remarks);
-    Report(const std::string& period, double totalDonations,
+           const string& generatedDate, const string& remarks);
+    Report(const string& period, double totalDonations,
            double totalAllocations);
 
-    std::string getId() const;
-    std::string getReportType() const;
-    std::string getPeriod() const;
+    string getId() const;
+    string getReportType() const;
+    string getPeriod() const;
     double getTotalDonations() const;
     double getTotalAllocations() const;
     double getRemainingBalance() const;
-    std::string getGeneratedDate() const;
-    std::string getRemarks() const;
+    string getGeneratedDate() const;
+    string getRemarks() const;
 
-    void setId(const std::string& id);
-    void setReportType(const std::string& reportType);
-    void setPeriod(const std::string& period);
+    void setId(const string& id);
+    void setReportType(const string& reportType);
+    void setPeriod(const string& period);
     void setTotalDonations(double totalDonations);
     void setTotalAllocations(double totalAllocations);
     void setRemainingBalance(double remainingBalance);
-    void setGeneratedDate(const std::string& generatedDate);
-    void setRemarks(const std::string& remarks);
+    void setGeneratedDate(const string& generatedDate);
+    void setRemarks(const string& remarks);
 
-    std::string displayInfo() const;
-    std::string serialize() const;
-    static Report deserialize(const std::string& line);
-    static std::string header();
-    std::string row() const;
+    string displayInfo() const;
+    string serialize() const;
+    static Report deserialize(const string& line);
+    static string header();
+    string row() const;
 
     Report operator+(const Report& other) const;
     bool operator>(const Report& other) const;

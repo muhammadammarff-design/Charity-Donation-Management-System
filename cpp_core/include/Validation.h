@@ -4,22 +4,24 @@
 #include <string>
 #include <vector>
 
-namespace Validation {
-    std::string trim(const std::string& value);
-    std::string sanitizeField(const std::string& value);
-    std::vector<std::string> split(const std::string& line, char delimiter = '|');
+using namespace std;
 
-    bool isNonEmpty(const std::string& value);
+namespace Validation {
+    string trim(const string& value);
+    string sanitizeField(const string& value);
+    vector<string> split(const string& line, char delimiter = '|');
+
+    bool isNonEmpty(const string& value);
     bool isValidAge(int age);
-    bool isValidContact(const std::string& contact);
-    bool isValidEmail(const std::string& email);
-    bool isValidDate(const std::string& date);       // YYYY-MM-DD
-    bool isValidMonth(const std::string& month);     // YYYY-MM
+    bool isValidContact(const string& contact);
+    bool isValidEmail(const string& email);
+    bool isValidDate(const string& date);       // YYYY-MM-DD
+    bool isValidMonth(const string& month);     // YYYY-MM
     bool isPositiveAmount(double amount);
 
-    bool safeToInt(const std::string& value, int& output);
-    bool safeToDouble(const std::string& value, double& output);
-    std::string toFixed2(double value);
+    bool safeToInt(const string& value, int& output);
+    bool safeToDouble(const string& value, double& output);
+    string toFixed2(double value);
 }
 
 #endif

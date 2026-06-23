@@ -4,14 +4,16 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 class FileManager {
 public:
-    static std::string dataDirectory();
-    static std::string pathFor(const std::string& fileName);
+    static string dataDirectory();
+    static string pathFor(const string& fileName);
     static void ensureDataDirectory();
-    static std::vector<std::string> readLines(const std::string& fileName);
-    static bool writeLines(const std::string& fileName, const std::vector<std::string>& lines);
-    static bool clearFile(const std::string& fileName);
+    static vector<string> readLines(const string& fileName);
+    static bool writeLines(const string& fileName, const vector<string>& lines);
+    static bool clearFile(const string& fileName);
 };
 
 #endif

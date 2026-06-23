@@ -3,14 +3,15 @@
 
 #include <sstream>
 
+using namespace std;
 Report::Report()
     : id(""), reportType("Monthly"), period(""), totalDonations(0.0),
       totalAllocations(0.0), remainingBalance(0.0), generatedDate(""), remarks("") {}
 
-Report::Report(const std::string& id, const std::string& reportType,
-               const std::string& period, double totalDonations,
+Report::Report(const string& id, const string& reportType,
+               const string& period, double totalDonations,
                double totalAllocations, double remainingBalance,
-               const std::string& generatedDate, const std::string& remarks)
+               const string& generatedDate, const string& remarks)
     : id(Validation::sanitizeField(id)),
       reportType(Validation::sanitizeField(reportType)),
       period(Validation::sanitizeField(period)),
@@ -20,32 +21,32 @@ Report::Report(const std::string& id, const std::string& reportType,
       generatedDate(Validation::sanitizeField(generatedDate)),
       remarks(Validation::sanitizeField(remarks)) {}
 
-Report::Report(const std::string& period, double totalDonations,
+Report::Report(const string& period, double totalDonations,
                double totalAllocations)
     : id(""), reportType("Monthly"), period(Validation::sanitizeField(period)),
       totalDonations(totalDonations), totalAllocations(totalAllocations),
       remainingBalance(totalDonations - totalAllocations), generatedDate(""), remarks("") {}
 
-std::string Report::getId() const { return id; }
-std::string Report::getReportType() const { return reportType; }
-std::string Report::getPeriod() const { return period; }
+string Report::getId() const { return id; }
+string Report::getReportType() const { return reportType; }
+string Report::getPeriod() const { return period; }
 double Report::getTotalDonations() const { return totalDonations; }
 double Report::getTotalAllocations() const { return totalAllocations; }
 double Report::getRemainingBalance() const { return remainingBalance; }
-std::string Report::getGeneratedDate() const { return generatedDate; }
-std::string Report::getRemarks() const { return remarks; }
+string Report::getGeneratedDate() const { return generatedDate; }
+string Report::getRemarks() const { return remarks; }
 
-void Report::setId(const std::string& id) { this->id = Validation::sanitizeField(id); }
-void Report::setReportType(const std::string& reportType) { this->reportType = Validation::sanitizeField(reportType); }
-void Report::setPeriod(const std::string& period) { this->period = Validation::sanitizeField(period); }
+void Report::setId(const string& id) { this->id = Validation::sanitizeField(id); }
+void Report::setReportType(const string& reportType) { this->reportType = Validation::sanitizeField(reportType); }
+void Report::setPeriod(const string& period) { this->period = Validation::sanitizeField(period); }
 void Report::setTotalDonations(double totalDonations) { this->totalDonations = totalDonations; }
 void Report::setTotalAllocations(double totalAllocations) { this->totalAllocations = totalAllocations; }
 void Report::setRemainingBalance(double remainingBalance) { this->remainingBalance = remainingBalance; }
-void Report::setGeneratedDate(const std::string& generatedDate) { this->generatedDate = Validation::sanitizeField(generatedDate); }
-void Report::setRemarks(const std::string& remarks) { this->remarks = Validation::sanitizeField(remarks); }
+void Report::setGeneratedDate(const string& generatedDate) { this->generatedDate = Validation::sanitizeField(generatedDate); }
+void Report::setRemarks(const string& remarks) { this->remarks = Validation::sanitizeField(remarks); }
 
-std::string Report::displayInfo() const {
-    std::ostringstream out;
+string Report::displayInfo() const {
+    ostringstream out;
     out << "Report => ID: " << id
         << ", Type: " << reportType
         << ", Period: " << period
@@ -56,8 +57,8 @@ std::string Report::displayInfo() const {
     return out.str();
 }
 
-std::string Report::serialize() const {
-    std::ostringstream out;
+string Report::serialize() const {
+    ostringstream out;
     out << Validation::sanitizeField(id) << '|'
         << Validation::sanitizeField(reportType) << '|'
         << Validation::sanitizeField(period) << '|'
@@ -69,8 +70,8 @@ std::string Report::serialize() const {
     return out.str();
 }
 
-Report Report::deserialize(const std::string& line) {
-    std::vector<std::string> p = Validation::split(line);
+Report Report::deserialize(const string& line) {
+    vector<string> p = Validation::split(line);
     if (p.size() < 8) {
         return Report();
     }
@@ -83,11 +84,11 @@ Report Report::deserialize(const std::string& line) {
     return Report(p[0], p[1], p[2], donations, allocations, remaining, p[6], p[7]);
 }
 
-std::string Report::header() {
+string Report::header() {
     return "id|reportType|period|totalDonations|totalAllocations|remainingBalance|generatedDate|remarks";
 }
 
-std::string Report::row() const {
+string Report::row() const {
     return serialize();
 }
 

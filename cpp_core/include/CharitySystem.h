@@ -11,10 +11,12 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 struct OperationResult {
     bool success;
-    std::string message;
-    std::string id;
+    string message;
+    string id;
 };
 
 struct SystemSummary {
@@ -30,26 +32,26 @@ struct SystemSummary {
 
 class CharitySystem {
 private:
-    std::vector<Donor> donors;
-    std::vector<Beneficiary> beneficiaries;
-    std::vector<Campaign> campaigns;
-    std::vector<Donation> donations;
-    std::vector<FundAllocation> allocations;
-    std::vector<Report> reports;
+    vector<Donor> donors;
+    vector<Beneficiary> beneficiaries;
+    vector<Campaign> campaigns;
+    vector<Donation> donations;
+    vector<FundAllocation> allocations;
+    vector<Report> reports;
 
-    int findDonorIndex(const std::string& id) const;
-    int findBeneficiaryIndex(const std::string& id) const;
-    int findCampaignIndex(const std::string& id) const;
-    bool donorHasDonations(const std::string& donorId) const;
-    bool beneficiaryHasAllocations(const std::string& beneficiaryId) const;
-    bool campaignHasReferences(const std::string& campaignId) const;
-    std::string nextId(const std::string& prefix, const std::vector<std::string>& existingIds) const;
-    std::string nextDonorId() const;
-    std::string nextBeneficiaryId() const;
-    std::string nextCampaignId() const;
-    std::string nextDonationId() const;
-    std::string nextAllocationId() const;
-    std::string nextReportId() const;
+    int findDonorIndex(const string& id) const;
+    int findBeneficiaryIndex(const string& id) const;
+    int findCampaignIndex(const string& id) const;
+    bool donorHasDonations(const string& donorId) const;
+    bool beneficiaryHasAllocations(const string& beneficiaryId) const;
+    bool campaignHasReferences(const string& campaignId) const;
+    string nextId(const string& prefix, const vector<string>& existingIds) const;
+    string nextDonorId() const;
+    string nextBeneficiaryId() const;
+    string nextCampaignId() const;
+    string nextDonationId() const;
+    string nextAllocationId() const;
+    string nextReportId() const;
     void recalculateTotals();
 
 public:
@@ -60,50 +62,50 @@ public:
     bool clearAll();
     bool seedDemoData();
 
-    OperationResult addDonor(const std::string& name, int age, const std::string& contact,
-                             const std::string& email, const std::string& address,
-                             const std::string& donorType);
-    OperationResult updateDonor(const std::string& id, const std::string& name, int age,
-                                const std::string& contact, const std::string& email,
-                                const std::string& address, const std::string& donorType);
-    OperationResult deleteDonor(const std::string& id);
+    OperationResult addDonor(const string& name, int age, const string& contact,
+                             const string& email, const string& address,
+                             const string& donorType);
+    OperationResult updateDonor(const string& id, const string& name, int age,
+                                const string& contact, const string& email,
+                                const string& address, const string& donorType);
+    OperationResult deleteDonor(const string& id);
 
-    OperationResult addBeneficiary(const std::string& name, int age, const std::string& contact,
-                                   const std::string& address, int familySize,
-                                   const std::string& needType, const std::string& campaignId);
-    OperationResult updateBeneficiary(const std::string& id, const std::string& name, int age,
-                                      const std::string& contact, const std::string& address,
-                                      int familySize, const std::string& needType,
-                                      const std::string& campaignId);
-    OperationResult deleteBeneficiary(const std::string& id);
+    OperationResult addBeneficiary(const string& name, int age, const string& contact,
+                                   const string& address, int familySize,
+                                   const string& needType, const string& campaignId);
+    OperationResult updateBeneficiary(const string& id, const string& name, int age,
+                                      const string& contact, const string& address,
+                                      int familySize, const string& needType,
+                                      const string& campaignId);
+    OperationResult deleteBeneficiary(const string& id);
 
-    OperationResult addCampaign(const std::string& title, const std::string& description,
-                                double targetAmount, const std::string& startDate,
-                                const std::string& endDate, const std::string& status);
-    OperationResult updateCampaign(const std::string& id, const std::string& title,
-                                   const std::string& description, double targetAmount,
-                                   const std::string& startDate, const std::string& endDate,
-                                   const std::string& status);
-    OperationResult deleteCampaign(const std::string& id);
+    OperationResult addCampaign(const string& title, const string& description,
+                                double targetAmount, const string& startDate,
+                                const string& endDate, const string& status);
+    OperationResult updateCampaign(const string& id, const string& title,
+                                   const string& description, double targetAmount,
+                                   const string& startDate, const string& endDate,
+                                   const string& status);
+    OperationResult deleteCampaign(const string& id);
 
-    OperationResult recordDonation(const std::string& donorId, const std::string& campaignId,
-                                   double amount, const std::string& date,
-                                   const std::string& paymentMethod, const std::string& note);
-    OperationResult allocateFunds(const std::string& beneficiaryId, const std::string& campaignId,
-                                  double amount, const std::string& date,
-                                  const std::string& purpose, const std::string& approvedBy);
-    OperationResult generateMonthlyReport(const std::string& month);
-    OperationResult generateCampaignReport(const std::string& campaignId);
+    OperationResult recordDonation(const string& donorId, const string& campaignId,
+                                   double amount, const string& date,
+                                   const string& paymentMethod, const string& note);
+    OperationResult allocateFunds(const string& beneficiaryId, const string& campaignId,
+                                  double amount, const string& date,
+                                  const string& purpose, const string& approvedBy);
+    OperationResult generateMonthlyReport(const string& month);
+    OperationResult generateCampaignReport(const string& campaignId);
 
     SystemSummary summary() const;
-    std::string currentDate() const;
+    string currentDate() const;
 
-    const std::vector<Donor>& getDonors() const;
-    const std::vector<Beneficiary>& getBeneficiaries() const;
-    const std::vector<Campaign>& getCampaigns() const;
-    const std::vector<Donation>& getDonations() const;
-    const std::vector<FundAllocation>& getAllocations() const;
-    const std::vector<Report>& getReports() const;
+    const vector<Donor>& getDonors() const;
+    const vector<Beneficiary>& getBeneficiaries() const;
+    const vector<Campaign>& getCampaigns() const;
+    const vector<Donation>& getDonations() const;
+    const vector<FundAllocation>& getAllocations() const;
+    const vector<Report>& getReports() const;
 };
 
 #endif

@@ -3,14 +3,15 @@
 
 #include <sstream>
 
+using namespace std;
 Donation::Donation()
     : id(""), donorId(""), campaignId(""), amount(0.0), date(""),
       paymentMethod("Cash"), note("") {}
 
-Donation::Donation(const std::string& id, const std::string& donorId,
-                   const std::string& campaignId, double amount,
-                   const std::string& date, const std::string& paymentMethod,
-                   const std::string& note)
+Donation::Donation(const string& id, const string& donorId,
+                   const string& campaignId, double amount,
+                   const string& date, const string& paymentMethod,
+                   const string& note)
     : id(Validation::sanitizeField(id)),
       donorId(Validation::sanitizeField(donorId)),
       campaignId(Validation::sanitizeField(campaignId)),
@@ -19,28 +20,28 @@ Donation::Donation(const std::string& id, const std::string& donorId,
       paymentMethod(Validation::sanitizeField(paymentMethod)),
       note(Validation::sanitizeField(note)) {}
 
-Donation::Donation(double amount, const std::string& date)
+Donation::Donation(double amount, const string& date)
     : id(""), donorId(""), campaignId(""), amount(amount),
       date(Validation::sanitizeField(date)), paymentMethod("Cash"), note("") {}
 
-std::string Donation::getId() const { return id; }
-std::string Donation::getDonorId() const { return donorId; }
-std::string Donation::getCampaignId() const { return campaignId; }
+string Donation::getId() const { return id; }
+string Donation::getDonorId() const { return donorId; }
+string Donation::getCampaignId() const { return campaignId; }
 double Donation::getAmount() const { return amount; }
-std::string Donation::getDate() const { return date; }
-std::string Donation::getPaymentMethod() const { return paymentMethod; }
-std::string Donation::getNote() const { return note; }
+string Donation::getDate() const { return date; }
+string Donation::getPaymentMethod() const { return paymentMethod; }
+string Donation::getNote() const { return note; }
 
-void Donation::setId(const std::string& id) { this->id = Validation::sanitizeField(id); }
-void Donation::setDonorId(const std::string& donorId) { this->donorId = Validation::sanitizeField(donorId); }
-void Donation::setCampaignId(const std::string& campaignId) { this->campaignId = Validation::sanitizeField(campaignId); }
+void Donation::setId(const string& id) { this->id = Validation::sanitizeField(id); }
+void Donation::setDonorId(const string& donorId) { this->donorId = Validation::sanitizeField(donorId); }
+void Donation::setCampaignId(const string& campaignId) { this->campaignId = Validation::sanitizeField(campaignId); }
 void Donation::setAmount(double amount) { this->amount = amount; }
-void Donation::setDate(const std::string& date) { this->date = Validation::sanitizeField(date); }
-void Donation::setPaymentMethod(const std::string& paymentMethod) { this->paymentMethod = Validation::sanitizeField(paymentMethod); }
-void Donation::setNote(const std::string& note) { this->note = Validation::sanitizeField(note); }
+void Donation::setDate(const string& date) { this->date = Validation::sanitizeField(date); }
+void Donation::setPaymentMethod(const string& paymentMethod) { this->paymentMethod = Validation::sanitizeField(paymentMethod); }
+void Donation::setNote(const string& note) { this->note = Validation::sanitizeField(note); }
 
-std::string Donation::displayInfo() const {
-    std::ostringstream out;
+string Donation::displayInfo() const {
+    ostringstream out;
     out << "Donation => ID: " << id
         << ", Donor: " << donorId
         << ", Campaign: " << campaignId
@@ -50,8 +51,8 @@ std::string Donation::displayInfo() const {
     return out.str();
 }
 
-std::string Donation::serialize() const {
-    std::ostringstream out;
+string Donation::serialize() const {
+    ostringstream out;
     out << Validation::sanitizeField(id) << '|'
         << Validation::sanitizeField(donorId) << '|'
         << Validation::sanitizeField(campaignId) << '|'
@@ -62,8 +63,8 @@ std::string Donation::serialize() const {
     return out.str();
 }
 
-Donation Donation::deserialize(const std::string& line) {
-    std::vector<std::string> p = Validation::split(line);
+Donation Donation::deserialize(const string& line) {
+    vector<string> p = Validation::split(line);
     if (p.size() < 7) {
         return Donation();
     }
@@ -74,11 +75,11 @@ Donation Donation::deserialize(const std::string& line) {
     return Donation(p[0], p[1], p[2], parsedAmount, p[4], p[5], p[6]);
 }
 
-std::string Donation::header() {
+string Donation::header() {
     return "id|donorId|campaignId|amount|date|paymentMethod|note";
 }
 
-std::string Donation::row() const {
+string Donation::row() const {
     return serialize();
 }
 

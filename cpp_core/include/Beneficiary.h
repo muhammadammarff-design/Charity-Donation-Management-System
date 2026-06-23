@@ -5,38 +5,40 @@
 
 #include <string>
 
+using namespace std;
+
 class Beneficiary : public Person {
 private:
     int familySize;
-    std::string needType;
-    std::string campaignId;
+    string needType;
+    string campaignId;
     double totalReceived;
 
 public:
     Beneficiary();
-    Beneficiary(const std::string& id, const std::string& name, int age,
-                const std::string& contact, const std::string& address,
-                int familySize, const std::string& needType,
-                const std::string& campaignId, double totalReceived = 0.0);
-    Beneficiary(const std::string& name, const std::string& needType,
-                const std::string& campaignId);
+    Beneficiary(const string& id, const string& name, int age,
+                const string& contact, const string& address,
+                int familySize, const string& needType,
+                const string& campaignId, double totalReceived = 0.0);
+    Beneficiary(const string& name, const string& needType,
+                const string& campaignId);
 
     int getFamilySize() const;
-    std::string getNeedType() const;
-    std::string getCampaignId() const;
+    string getNeedType() const;
+    string getCampaignId() const;
     double getTotalReceived() const;
 
     void setFamilySize(int familySize);
-    void setNeedType(const std::string& needType);
-    void setCampaignId(const std::string& campaignId);
+    void setNeedType(const string& needType);
+    void setCampaignId(const string& campaignId);
     void setTotalReceived(double totalReceived);
     void addReceivedAmount(double amount);
 
-    std::string displayInfo() const override;
-    std::string serialize() const;
-    static Beneficiary deserialize(const std::string& line);
-    static std::string header();
-    std::string row() const;
+    string displayInfo() const override;
+    string serialize() const;
+    static Beneficiary deserialize(const string& line);
+    static string header();
+    string row() const;
 };
 
 #endif

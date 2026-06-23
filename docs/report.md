@@ -8,7 +8,7 @@
 **Department:** [Department Name]  
 **Section:** [Section]  
 **Instructor:** Miss Muneeba  
-**Submission Date:** [Submission Date]
+**Submission Date:** 22 June 2026
 
 **Submitted By:**
 
@@ -32,7 +32,7 @@
 8. User Interface and Web Dashboard  
 9. Responsive Design Improvements  
 10. Testing and Validation  
-11. Screenshots Required for Final PDF  
+11. Screenshots and Demonstration Evidence  
 12. Challenges Faced  
 13. Future Enhancements  
 14. Conclusion  
@@ -101,6 +101,16 @@ The C++ part is the foundation of the project. It contains all major classes and
 The web dashboard is hosted using Vercel and uses Supabase as the database. This makes the project more useful because it allows real data to be stored online. Admins can log in, donors can verify themselves, and reports can be generated from saved records.
 
 This approach was selected because it keeps the academic OOP requirements in C++ while also giving the project a professional and easy-to-use interface.
+
+
+### 4.3 Project Links
+
+The final hosted web application and source repository are:
+
+| Item | Link |
+|---|---|
+| Hosted Web App | https://charity-donation-management-system-ruddy.vercel.app/ |
+| GitHub Repository | https://github.com/muhammadammarff-design/Charity-Donation-Management-System |
 
 ---
 
@@ -391,61 +401,87 @@ Examples:
 - Beneficiary must be linked to the same campaign before allocation.
 - Donor login requires correct donor ID and email.
 
----
 
-## 11. Screenshots Required for Final PDF
+### 10.5 Rubric Alignment
 
-Screenshots will be added after final approval. The current report is a Markdown draft, so the screenshot places are listed clearly below.
+The project was checked against the given OOP project rubric. The system clearly defines a real problem, uses multiple meaningful classes, provides working features with validation, stores data through file/database handling, and includes UML, screenshots, and evidence for explanation.
 
-Please provide clear screenshots with good zoom and readable text. For the final PDF, the recommended mix will be used: desktop screenshots for login/admin/campaigns/forms, and mobile screenshots for Reports, My Statement, and Campaign Impact to prove the responsive fixes. Please upload the screenshots here as PNG or JPG files.
-
-### 11.1 Required Screenshots Based on the Rubric
-
-| No. | Screenshot | Recommended View | Why It Is Needed |
-|---|---|---|---|
-| 1 | Login page | Desktop | Shows entry point and role selection |
-| 2 | Admin dashboard | Desktop | Shows main interface, summary cards, and project usefulness |
-| 3 | Campaigns page | Desktop | Shows campaign management and progress tracking |
-| 4 | Admin reports page | Mobile | Shows the fixed responsive reports design |
-| 5 | Donor My Statement page | Mobile | Shows the fixed responsive donor statement design |
-| 6 | Donor Campaign Impact page | Mobile | Shows the fixed responsive campaign impact design |
-| 7 | Donation form or Record Donation modal | Desktop | Shows project functionality and CRUD-style data entry |
-| 8 | C++ terminal output for OOP demo | Desktop/Terminal | Shows OOP concepts working in the C++ core |
-| 9 | C++ terminal output for validation demo | Desktop/Terminal | Shows input validation and error handling |
-| 10 | UML class diagram | Existing diagram image | Supports documentation and OOP design section |
-| 11 | Use case diagram | Existing diagram image | Shows system actors and main use cases |
-| 12 | Supabase tables or schema screen | Desktop | Shows database management and hosted backend |
-
-### 11.2 Optional Screenshots
-
-These are not compulsory, but they can make the final PDF stronger:
-
-- Donor Make Donation page on mobile
-- Campaigns page on mobile
-- Reports page on desktop
-- Vercel deployment screen
-- Supabase SQL function or table relationship screen
-
-### 11.3 Screenshot Placeholders
-
-The final PDF will use the following placeholders:
-
-```text
-[Insert Screenshot 1: Login Page - Desktop]
-[Insert Screenshot 2: Admin Dashboard - Desktop]
-[Insert Screenshot 3: Campaigns Page - Desktop]
-[Insert Screenshot 4: Admin Reports Page - Mobile]
-[Insert Screenshot 5: Donor My Statement Page - Mobile]
-[Insert Screenshot 6: Donor Campaign Impact Page - Mobile]
-[Insert Screenshot 7: Donation Form / Record Donation Modal]
-[Insert Screenshot 8: C++ OOP Demo Output]
-[Insert Screenshot 9: C++ Validation Demo Output]
-[Insert Screenshot 10: UML Class Diagram]
-[Insert Screenshot 11: Use Case Diagram]
-[Insert Screenshot 12: Supabase Database / Schema]
-```
+| Rubric Area | How This Project Covers It |
+|---|---|
+| Problem Definition and Solution Design | Solves a practical charity transparency problem with donor, campaign, allocation, and report tracking. |
+| OOP Design and Class Structure | Uses meaningful C++ classes with encapsulation, inheritance, polymorphism, constructors, operator overloading, and object relationships. |
+| Functionality and Validation | Supports donor records, campaigns, donations, fund allocations, donor statements, campaign impact, and report generation with validation. |
+| Data Management and Interface | Uses C++ text-file handling for the OOP core and Supabase PostgreSQL for the hosted dashboard. |
+| Documentation and UML | Includes this project report, class diagram, use case diagram, evidence files, and screenshots. |
+| Understanding of Concepts | The code structure and evidence commands make it possible to clearly explain the project and OOP implementation. |
 
 ---
+
+
+## 11. Screenshots and Demonstration Evidence
+
+The following screenshots were taken from the final hosted Vercel application after the responsive fixes. Desktop screenshots are used for the main dashboard and form views, while mobile screenshots are used to prove that the problem pages now work properly on phones.
+
+### 11.1 Desktop Screenshots
+
+<figure class="wide">
+  <img src="screenshots/final/01-login-desktop.png" alt="Login page desktop screenshot">
+  <figcaption>Figure 1: Login page with donor, register, and admin access tabs.</figcaption>
+</figure>
+
+<figure class="wide">
+  <img src="screenshots/final/02-admin-dashboard-desktop.png" alt="Admin dashboard desktop screenshot">
+  <figcaption>Figure 2: Admin dashboard showing financial summary, priority actions, and management controls.</figcaption>
+</figure>
+
+<figure class="wide">
+  <img src="screenshots/final/03-donor-statement-desktop.png" alt="Donor statement desktop screenshot">
+  <figcaption>Figure 3: Donor statement desktop view showing total donations, campaign count, and donation history.</figcaption>
+</figure>
+
+<figure class="wide">
+  <img src="screenshots/final/04-donor-make-donation-desktop.png" alt="Make donation desktop screenshot">
+  <figcaption>Figure 4: Donor make donation page with verified donor details and active campaign selection.</figcaption>
+</figure>
+
+### 11.2 Mobile Responsive Screenshots
+
+<figure class="phone">
+  <img src="screenshots/final/05-donor-statement-mobile.jpeg" alt="Donor statement mobile screenshot">
+  <figcaption>Figure 5: Mobile view of the donor My Statement page after the responsive rebuild.</figcaption>
+</figure>
+
+<figure class="phone">
+  <img src="screenshots/final/06-reports-mobile.jpeg" alt="Reports mobile screenshot">
+  <figcaption>Figure 6: Mobile view of the admin Reports page with full-width buttons and stacked summary cards.</figcaption>
+</figure>
+
+<figure class="phone">
+  <img src="screenshots/final/07-campaign-impact-mobile.jpeg" alt="Campaign impact mobile screenshot">
+  <figcaption>Figure 7: Mobile view of Campaign Impact showing supported campaigns and allocation evidence.</figcaption>
+</figure>
+
+### 11.3 UML and C++ Evidence
+
+<figure class="wide diagram">
+  <img src="uml/class_diagram.png" alt="Class diagram">
+  <figcaption>Figure 8: UML class diagram showing the main OOP class structure.</figcaption>
+</figure>
+
+<figure class="wide diagram">
+  <img src="uml/use_case_diagram.png" alt="Use case diagram">
+  <figcaption>Figure 9: Use case diagram showing donor and admin interaction with the system.</figcaption>
+</figure>
+
+<figure class="wide evidence">
+  <img src="screenshots/04_oop_evidence.png" alt="C++ OOP demo evidence">
+  <figcaption>Figure 10: C++ OOP evidence output showing class behavior and object-oriented implementation.</figcaption>
+</figure>
+
+<figure class="wide evidence">
+  <img src="screenshots/03_validation_evidence.png" alt="C++ validation evidence">
+  <figcaption>Figure 11: C++ validation evidence showing that incorrect data is handled properly.</figcaption>
+</figure>
 
 ## 12. Challenges Faced
 
@@ -489,7 +525,7 @@ The Charity & Donation Management System successfully solves a practical charity
 
 The hosted dashboard makes the same project idea easier to understand and present. It allows donors to check their statements and campaign impact, while admins can manage campaigns, donations, allocations, and reports.
 
-The final responsive fixes improved the donor statement page, campaign impact page, and reports page for mobile users. After these updates, the project is more complete, cleaner, and ready for final submission after screenshots are added.
+The final responsive fixes improved the donor statement page, campaign impact page, and reports page for mobile users. After these updates, the project is more complete, cleaner, and ready for final submission with screenshots and evidence included.
 
 ---
 
@@ -565,11 +601,3 @@ supabase/schema.sql
 Then create an admin user in Supabase Auth and insert the admin profile row as explained in `SUPABASE_SETUP.md`.
 
 ---
-
-## Final Note Before PDF Generation
-
-This Markdown file is ready as the report draft. After the final screenshots are provided and approved, it should be converted into a properly formatted PDF with this file name:
-
-```text
-Charity_Donation_Management_System_Second_Semester_Project_Report.pdf
-```

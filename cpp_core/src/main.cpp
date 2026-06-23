@@ -9,11 +9,7 @@
 #include <string>
 #include <vector>
 
-using std::cin;
-using std::cout;
-using std::endl;
-using std::string;
-using std::vector;
+using namespace std;
 
 void printHelp() {
     cout << "Charity & Donation Management System - C++ Core\n";
@@ -101,8 +97,8 @@ void listData(const CharitySystem& system, const string& type) {
 }
 
 string toLowerCopy(string value) {
-    std::transform(value.begin(), value.end(), value.begin(), [](unsigned char ch) {
-        return static_cast<char>(std::tolower(ch));
+    transform(value.begin(), value.end(), value.begin(), [](unsigned char ch) {
+        return static_cast<char>(tolower(ch));
     });
     return value;
 }
@@ -118,8 +114,8 @@ const Donor* findVerifiedDonor(const CharitySystem& system, const string& donorI
     return nullptr;
 }
 
-std::set<string> campaignsSupportedByDonor(const CharitySystem& system, const string& donorId) {
-    std::set<string> campaignIds;
+set<string> campaignsSupportedByDonor(const CharitySystem& system, const string& donorId) {
+    set<string> campaignIds;
     for (const Donation& donation : system.getDonations()) {
         if (donation.getDonorId() == donorId) {
             campaignIds.insert(donation.getCampaignId());
@@ -144,7 +140,7 @@ void printDonorStatement(const CharitySystem& system, const string& donorId, con
         }
     }
 
-    std::set<string> campaignIds = campaignsSupportedByDonor(system, donor->getId());
+    set<string> campaignIds = campaignsSupportedByDonor(system, donor->getId());
     cout << "metric|value\n";
     cout << "donorId|" << donor->getId() << "\n";
     cout << "donorName|" << donor->getName() << "\n";
@@ -177,7 +173,7 @@ void printDonorCampaigns(const CharitySystem& system, const string& donorId, con
         return;
     }
 
-    std::set<string> campaignIds = campaignsSupportedByDonor(system, donor->getId());
+    set<string> campaignIds = campaignsSupportedByDonor(system, donor->getId());
     cout << Campaign::header() << "\n";
     for (const Campaign& campaign : system.getCampaigns()) {
         if (campaignIds.count(campaign.getId()) > 0) {
@@ -193,7 +189,7 @@ void printDonorAllocations(const CharitySystem& system, const string& donorId, c
         return;
     }
 
-    std::set<string> campaignIds = campaignsSupportedByDonor(system, donor->getId());
+    set<string> campaignIds = campaignsSupportedByDonor(system, donor->getId());
     cout << FundAllocation::header() << "\n";
     for (const FundAllocation& allocation : system.getAllocations()) {
         if (campaignIds.count(allocation.getCampaignId()) > 0) {
@@ -277,7 +273,7 @@ void runOopDemo(const CharitySystem& system) {
 string promptLine(const string& label) {
     cout << label;
     string value;
-    std::getline(cin, value);
+    getline(cin, value);
     return value;
 }
 
@@ -321,7 +317,7 @@ void interactiveMenu() {
         cout << "Choose option: ";
 
         string choiceText;
-        std::getline(cin, choiceText);
+        getline(cin, choiceText);
         int choice = -1;
         Validation::safeToInt(choiceText, choice);
 

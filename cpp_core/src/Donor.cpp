@@ -3,36 +3,37 @@
 
 #include <sstream>
 
+using namespace std;
 Donor::Donor()
     : Person(), email(""), donorType("Individual"), totalDonated(0.0) {}
 
-Donor::Donor(const std::string& id, const std::string& name, int age,
-             const std::string& contact, const std::string& email,
-             const std::string& address, const std::string& donorType,
+Donor::Donor(const string& id, const string& name, int age,
+             const string& contact, const string& email,
+             const string& address, const string& donorType,
              double totalDonated)
     : Person(id, name, age, contact, address),
       email(Validation::sanitizeField(email)),
       donorType(Validation::sanitizeField(donorType)),
       totalDonated(totalDonated) {}
 
-Donor::Donor(const std::string& name, const std::string& contact,
-             const std::string& email)
+Donor::Donor(const string& name, const string& contact,
+             const string& email)
     : Person("", name, 0, contact, ""),
       email(Validation::sanitizeField(email)),
       donorType("Individual"),
       totalDonated(0.0) {}
 
-std::string Donor::getEmail() const { return email; }
-std::string Donor::getDonorType() const { return donorType; }
+string Donor::getEmail() const { return email; }
+string Donor::getDonorType() const { return donorType; }
 double Donor::getTotalDonated() const { return totalDonated; }
 
-void Donor::setEmail(const std::string& email) { this->email = Validation::sanitizeField(email); }
-void Donor::setDonorType(const std::string& donorType) { this->donorType = Validation::sanitizeField(donorType); }
+void Donor::setEmail(const string& email) { this->email = Validation::sanitizeField(email); }
+void Donor::setDonorType(const string& donorType) { this->donorType = Validation::sanitizeField(donorType); }
 void Donor::setTotalDonated(double totalDonated) { this->totalDonated = totalDonated; }
 void Donor::addDonationAmount(double amount) { totalDonated += amount; }
 
-std::string Donor::displayInfo() const {
-    std::ostringstream out;
+string Donor::displayInfo() const {
+    ostringstream out;
     out << "Donor => " << Person::displayInfo()
         << ", Email: " << email
         << ", Type: " << donorType
@@ -40,8 +41,8 @@ std::string Donor::displayInfo() const {
     return out.str();
 }
 
-std::string Donor::serialize() const {
-    std::ostringstream out;
+string Donor::serialize() const {
+    ostringstream out;
     out << Validation::sanitizeField(id) << '|'
         << Validation::sanitizeField(name) << '|'
         << age << '|'
@@ -53,8 +54,8 @@ std::string Donor::serialize() const {
     return out.str();
 }
 
-Donor Donor::deserialize(const std::string& line) {
-    std::vector<std::string> p = Validation::split(line);
+Donor Donor::deserialize(const string& line) {
+    vector<string> p = Validation::split(line);
     if (p.size() < 8) {
         return Donor();
     }
@@ -67,11 +68,11 @@ Donor Donor::deserialize(const std::string& line) {
     return Donor(p[0], p[1], parsedAge, p[3], p[4], p[5], p[6], parsedTotal);
 }
 
-std::string Donor::header() {
+string Donor::header() {
     return "id|name|age|contact|email|address|donorType|totalDonated";
 }
 
-std::string Donor::row() const {
+string Donor::row() const {
     return serialize();
 }
 

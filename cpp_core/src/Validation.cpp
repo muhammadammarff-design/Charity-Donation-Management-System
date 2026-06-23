@@ -6,19 +6,18 @@
 #include <regex>
 #include <sstream>
 
-using std::string;
-using std::vector;
+using namespace std;
 
 namespace Validation {
 
 string trim(const string& value) {
     size_t start = 0;
-    while (start < value.size() && std::isspace(static_cast<unsigned char>(value[start]))) {
+    while (start < value.size() && isspace(static_cast<unsigned char>(value[start]))) {
         start++;
     }
 
     size_t end = value.size();
-    while (end > start && std::isspace(static_cast<unsigned char>(value[end - 1]))) {
+    while (end > start && isspace(static_cast<unsigned char>(value[end - 1]))) {
         end--;
     }
 
@@ -38,9 +37,9 @@ string sanitizeField(const string& value) {
 vector<string> split(const string& line, char delimiter) {
     vector<string> parts;
     string current;
-    std::stringstream ss(line);
+    stringstream ss(line);
 
-    while (std::getline(ss, current, delimiter)) {
+    while (getline(ss, current, delimiter)) {
         parts.push_back(current);
     }
 
@@ -68,7 +67,7 @@ bool isValidContact(const string& contact) {
 
     int digitCount = 0;
     for (char ch : trimmed) {
-        if (std::isdigit(static_cast<unsigned char>(ch))) {
+        if (isdigit(static_cast<unsigned char>(ch))) {
             digitCount++;
         } else if (ch == '+' || ch == '-' || ch == ' ' || ch == '(' || ch == ')') {
             continue;
@@ -87,21 +86,21 @@ bool isValidEmail(const string& email) {
     }
 
     // Normal student-project level validation: user@domain.tld
-    static const std::regex pattern(R"(^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$)");
-    return std::regex_match(trimmed, pattern);
+    static const regex pattern(R"(^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$)");
+    return regex_match(trimmed, pattern);
 }
 
 bool isValidDate(const string& date) {
-    static const std::regex pattern(R"(^\d{4}-\d{2}-\d{2}$)");
-    if (!std::regex_match(date, pattern)) {
+    static const regex pattern(R"(^\d{4}-\d{2}-\d{2}$)");
+    if (!regex_match(date, pattern)) {
         return false;
     }
 
     int year = 0, month = 0, day = 0;
     try {
-        year = std::stoi(date.substr(0, 4));
-        month = std::stoi(date.substr(5, 2));
-        day = std::stoi(date.substr(8, 2));
+        year = stoi(date.substr(0, 4));
+        month = stoi(date.substr(5, 2));
+        day = stoi(date.substr(8, 2));
     } catch (...) {
         return false;
     }
@@ -120,15 +119,15 @@ bool isValidDate(const string& date) {
 }
 
 bool isValidMonth(const string& month) {
-    static const std::regex pattern(R"(^\d{4}-\d{2}$)");
-    if (!std::regex_match(month, pattern)) {
+    static const regex pattern(R"(^\d{4}-\d{2}$)");
+    if (!regex_match(month, pattern)) {
         return false;
     }
 
     int yearValue = 0, monthValue = 0;
     try {
-        yearValue = std::stoi(month.substr(0, 4));
-        monthValue = std::stoi(month.substr(5, 2));
+        yearValue = stoi(month.substr(0, 4));
+        monthValue = stoi(month.substr(5, 2));
     } catch (...) {
         return false;
     }
@@ -143,7 +142,7 @@ bool isPositiveAmount(double amount) {
 bool safeToInt(const string& value, int& output) {
     try {
         size_t pos = 0;
-        int parsed = std::stoi(trim(value), &pos);
+        int parsed = stoi(trim(value), &pos);
         if (pos != trim(value).size()) {
             return false;
         }
@@ -157,7 +156,7 @@ bool safeToInt(const string& value, int& output) {
 bool safeToDouble(const string& value, double& output) {
     try {
         size_t pos = 0;
-        double parsed = std::stod(trim(value), &pos);
+        double parsed = stod(trim(value), &pos);
         if (pos != trim(value).size()) {
             return false;
         }
@@ -169,8 +168,8 @@ bool safeToDouble(const string& value, double& output) {
 }
 
 string toFixed2(double value) {
-    std::ostringstream out;
-    out << std::fixed << std::setprecision(2) << value;
+    ostringstream out;
+    out << fixed << setprecision(2) << value;
     return out.str();
 }
 

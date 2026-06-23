@@ -3,57 +3,59 @@
 
 #include <string>
 
+using namespace std;
+
 class Campaign {
 private:
-    std::string id;
-    std::string title;
-    std::string description;
+    string id;
+    string title;
+    string description;
     double targetAmount;
     double collectedAmount;
     double allocatedAmount;
-    std::string startDate;
-    std::string endDate;
-    std::string status;
+    string startDate;
+    string endDate;
+    string status;
 
 public:
     Campaign();
-    Campaign(const std::string& id, const std::string& title,
-             const std::string& description, double targetAmount,
+    Campaign(const string& id, const string& title,
+             const string& description, double targetAmount,
              double collectedAmount, double allocatedAmount,
-             const std::string& startDate, const std::string& endDate,
-             const std::string& status);
-    Campaign(const std::string& title, double targetAmount);
+             const string& startDate, const string& endDate,
+             const string& status);
+    Campaign(const string& title, double targetAmount);
 
-    std::string getId() const;
-    std::string getTitle() const;
-    std::string getDescription() const;
+    string getId() const;
+    string getTitle() const;
+    string getDescription() const;
     double getTargetAmount() const;
     double getCollectedAmount() const;
     double getAllocatedAmount() const;
-    std::string getStartDate() const;
-    std::string getEndDate() const;
-    std::string getStatus() const;
+    string getStartDate() const;
+    string getEndDate() const;
+    string getStatus() const;
 
-    void setId(const std::string& id);
-    void setTitle(const std::string& title);
-    void setDescription(const std::string& description);
+    void setId(const string& id);
+    void setTitle(const string& title);
+    void setDescription(const string& description);
     void setTargetAmount(double targetAmount);
     void setCollectedAmount(double collectedAmount);
     void setAllocatedAmount(double allocatedAmount);
-    void setStartDate(const std::string& startDate);
-    void setEndDate(const std::string& endDate);
-    void setStatus(const std::string& status);
+    void setStartDate(const string& startDate);
+    void setEndDate(const string& endDate);
+    void setStatus(const string& status);
     void addCollectedAmount(double amount);
     void addAllocatedAmount(double amount);
 
     double getAvailableBalance() const;
     double getProgressPercent() const;
 
-    std::string displayInfo() const;
-    std::string serialize() const;
-    static Campaign deserialize(const std::string& line);
-    static std::string header();
-    std::string row() const;
+    string displayInfo() const;
+    string serialize() const;
+    static Campaign deserialize(const string& line);
+    static string header();
+    string row() const;
 
     double operator+(const Campaign& other) const;
     bool operator<(const Campaign& other) const;
